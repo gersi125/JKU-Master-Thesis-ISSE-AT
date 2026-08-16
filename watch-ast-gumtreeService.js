@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 const { GUMTREE_CMD, DIFF_LOG } = require('./watch-ast-config');
-const { launchWebDiff } = require('./watch-ast-webdiffService');
+const { setLatestPair } = require('./watch-ast-webdiffService');
 
 const TYPE_MAP = {
     class_declaration: 'class',
@@ -17,22 +17,46 @@ const TYPE_MAP = {
     namespace_declaration: 'namespace',
     using_directive: 'using directive',
     identifier: 'identifier',
+    name: 'name',
     string_literal: 'string literal',
-    invocation_expression: 'method call'
+    invocation_expression: 'method call',
+    expr_stmt: 'statement',
+    expression_statement: 'statement',
+    assignment_expression: 'assignment',
+    postfix_unary_expression: 'expression',
+    prefix_unary_expression: 'expression'
 };
 
 function humanizeType(rawType) {
     return TYPE_MAP[rawType] || rawType || 'an element';
 }
 
-// GumTree's "tree" field looks like "property [87,115]" — a node type
-// plus a character-offset range into the source file, not a name.
+// GumTree's "tree" field comes in two shapes:
+//   "type [start,end]"           - structural node, no inline label
+//   "type: oldLabel [start,end]" - leaf node (identifier/literal) that
+//                                   carries its own text inline
 function parseTreeField(rawTree) {
-    const match = rawTree.match(/^(\S+)\s*\[(\d+),\s*(\d+)\]$/);
-    if (match) {
-        return { elementType: match[1], start: parseInt(match[2], 10), end: parseInt(match[3], 10) };
+    const withLabel = rawTree.match(/^(\S+):\s*(.*?)\s*\[(\d+),\s*(\d+)\]$/);
+    if (withLabel) {
+        return {
+            elementType: withLabel[1],
+            inlineLabel: withLabel[2],
+            start: parseInt(withLabel[3], 10),
+            end: parseInt(withLabel[4], 10)
+        };
     }
-    return { elementType: rawTree, start: null, end: null };
+
+    const plain = rawTree.match(/^(\S+)\s*\[(\d+),\s*(\d+)\]$/);
+    if (plain) {
+        return {
+            elementType: plain[1],
+            inlineLabel: null,
+            start: parseInt(plain[2], 10),
+            end: parseInt(plain[3], 10)
+        };
+    }
+
+    return { elementType: rawTree, inlineLabel: null, start: null, end: null };
 }
 
 // Reads the actual snippet of source at [start,end] from the given file.
@@ -49,77 +73,157 @@ function extractSnippet(filePath, start, end) {
     }
 }
 
+// Heuristic: peek at the source right after a renamed identifier's old
+// end offset to guess what kind of declaration it belongs to.
+function guessNameContext(filePath, endOffset) {
+    try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const after = content.slice(endOffset, endOffset + 5);
+        if (/^\s*\(/.test(after)) return 'method';
+        if (/^\s*\{/.test(after)) return 'property';
+    } catch (e) {
+        // ignore — fall through to default
+    }
+    return 'variable';
+}
+
 // Best-effort regex parsing of a C# declaration snippet to pull out
 // structured details: declared type, name, initial value, or method signature.
-// This is heuristic text parsing, not full semantic analysis — multi-line
-// or heavily generic/attributed declarations may not match cleanly.
 function analyzeSnippet(elementType, snippet) {
     if (!snippet) return null;
 
     const MODIFIERS = /^(?:(?:public|private|protected|internal|static|readonly|const|virtual|override|async|sealed)\s+)*/;
 
-    // Method declarations: returnType Name(params)
     if (elementType === 'method_declaration') {
         const m = snippet.replace(MODIFIERS, '').match(/^([\w<>\[\],.\s]+?)\s+(\w+)\s*\(([^)]*)\)/);
         if (m) {
-            return {
-                kind: 'method',
-                returnType: m[1].trim(),
-                name: m[2],
-                parameters: m[3].trim() || '(none)'
-            };
+            return { kind: 'method', returnType: m[1].trim(), name: m[2], parameters: m[3].trim() || '(none)' };
         }
     }
 
-    // Constructors: Name(params) — no return type
     if (elementType === 'constructor_declaration') {
         const m = snippet.replace(MODIFIERS, '').match(/^(\w+)\s*\(([^)]*)\)/);
         if (m) {
-            return {
-                kind: 'constructor',
-                name: m[1],
-                parameters: m[2].trim() || '(none)'
-            };
+            return { kind: 'constructor', name: m[1], parameters: m[2].trim() || '(none)' };
         }
     }
 
-    // Fields, properties, variables: Type Name [= value];
     if (['field_declaration', 'property_declaration', 'property', 'variable_declaration', 'local_declaration_statement'].includes(elementType)) {
         const m = snippet.replace(MODIFIERS, '').match(/^([\w<>\[\],.]+)\s+(\w+)\s*(?:=\s*(.+?))?\s*(?:;|\{|$)/);
         if (m) {
-            return {
-                kind: 'variable',
-                declaredType: m[1].trim(),
-                name: m[2],
-                initialValue: m[3] ? m[3].trim() : null
-            };
+            return { kind: 'variable', declaredType: m[1].trim(), name: m[2], initialValue: m[3] ? m[3].trim() : null };
         }
     }
 
     return null;
 }
 
-// Builds the plain-English logic-change sentence, using structured
-// details from analyzeSnippet when available, falling back to the
-// raw snippet/type otherwise.
-function describeAction(actionType, elementType, snippet) {
+// Recognizes common statement-level operations inside a snippet:
+// increment/decrement, compound assignment, plain assignment, calls.
+// This is intentionally narrow regex matching, not expression parsing —
+// it targets the common cases you'd want called out in a change log.
+function analyzeStatement(snippet) {
+    if (!snippet) return null;
+    let s = snippet.trim();
+    if (s.endsWith(';')) s = s.slice(0, -1).trim();
+
+    // increment / decrement: x++ , x-- , ++x , --x
+    let m = s.match(/^(\w+)\s*(\+\+|--)$/);
+    if (m) return { kind: m[2] === '++' ? 'increment' : 'decrement', name: m[1] };
+
+    m = s.match(/^(\+\+|--)\s*(\w+)$/);
+    if (m) return { kind: m[1] === '++' ? 'increment' : 'decrement', name: m[2] };
+
+    // compound assignment: x += n, x -= n, x *= n, x /= n, x %= n
+    m = s.match(/^(\w+)\s*(\+=|-=|\*=|\/=|%=)\s*(.+)$/);
+    if (m) {
+        const opWord = { '+=': 'increased', '-=': 'decreased', '*=': 'multiplied by', '/=': 'divided by', '%=': "modulo'd by" }[m[2]];
+        return { kind: 'compound-assign', name: m[1], op: m[2], value: m[3].trim(), opWord };
+    }
+
+    // plain assignment: x = value  (but not == comparisons)
+    m = s.match(/^(\w+)\s*=(?!=)\s*(.+)$/);
+    if (m) return { kind: 'assign', name: m[1], value: m[2].trim() };
+
+    // method call: Foo(args) or obj.Foo(args)
+    m = s.match(/^([\w.]+)\s*\(([^)]*)\)$/);
+    if (m) return { kind: 'call', name: m[1], args: m[2].trim() };
+
+    return null;
+}
+
+// Renders a second, more specific bullet for a recognized statement.
+// actionType lets us phrase deletions as "no longer" rather than restating
+// the operation as if it still happens.
+function describeStatement(actionType, stmt) {
+    const removed = (actionType === 'delete-node' || actionType === 'delete-tree');
+
+    switch (stmt.kind) {
+        case 'increment':
+            return removed
+                ? `Variable '${stmt.name}' is no longer incremented here.`
+                : `Variable '${stmt.name}' was incremented by 1.`;
+        case 'decrement':
+            return removed
+                ? `Variable '${stmt.name}' is no longer decremented here.`
+                : `Variable '${stmt.name}' was decremented by 1.`;
+        case 'compound-assign': {
+            const phrase = (stmt.op === '*=' || stmt.op === '/=' || stmt.op === '%=')
+                ? `${stmt.opWord} ${stmt.value}`
+                : `${stmt.opWord} by ${stmt.value}`;
+            return removed
+                ? `Variable '${stmt.name}' is no longer ${phrase} here.`
+                : `Variable '${stmt.name}' was ${phrase}.`;
+        }
+        case 'assign':
+            return removed
+                ? `Variable '${stmt.name}' is no longer set to ${stmt.value} here.`
+                : `Variable '${stmt.name}' was set to ${stmt.value}.`;
+        case 'call':
+            return removed
+                ? `Call to '${stmt.name}' was removed.`
+                : `Method '${stmt.name}' was called with arguments: ${stmt.args || '(none)'}.`;
+        default:
+            return null;
+    }
+}
+
+// Builds the plain-English logic-change sentence(s) for one action.
+// Returns an array — usually one line, but two when a more specific
+// statement-level interpretation is available (e.g. increment/assignment).
+function describeAction(actionType, elementType, snippet, options = {}) {
+    const { oldLabel, contextFile, contextOffset } = options;
+    const verb = { 'insert-node': 'Added', 'insert-tree': 'Added', 'delete-node': 'Removed', 'delete-tree': 'Removed', 'update-node': 'Modified' }[actionType] || actionType;
+    const lines = [];
+
+    // Rename of a leaf identifier.
+    if (actionType === 'update-node' && oldLabel && snippet && oldLabel !== snippet) {
+        const context = contextFile ? guessNameContext(contextFile, contextOffset) : 'identifier';
+        return [`Renamed ${context} '${oldLabel}' to '${snippet}'.`];
+    }
+
     const kind = humanizeType(elementType);
     const sem = analyzeSnippet(elementType, snippet);
-    const verb = { 'insert-node': 'Added', 'insert-tree': 'Added', 'delete-node': 'Removed', 'delete-tree': 'Removed', 'update-node': 'Modified' }[actionType] || actionType;
 
     if (sem && sem.kind === 'variable') {
         const valuePart = sem.initialValue ? `, initial value: ${sem.initialValue}` : ', no initial value assigned';
-        return `${verb} ${kind} '${sem.name}' — declared type: ${sem.declaredType}${valuePart}.`;
-    }
-
-    if (sem && (sem.kind === 'method' || sem.kind === 'constructor')) {
+        lines.push(`${verb} ${kind} '${sem.name}' — declared type: ${sem.declaredType}${valuePart}.`);
+    } else if (sem && (sem.kind === 'method' || sem.kind === 'constructor')) {
         const returnPart = sem.returnType ? `, return type: ${sem.returnType}` : '';
-        return `${verb} ${sem.kind} '${sem.name}'${returnPart}, parameters: ${sem.parameters}.`;
+        lines.push(`${verb} ${sem.kind} '${sem.name}'${returnPart}, parameters: ${sem.parameters}.`);
+    } else {
+        const preview = snippet ? `'${snippet}'` : 'an unnamed element';
+        lines.push(`${verb} ${kind} ${preview}.`);
     }
 
-    // Fallback — no structured match, just report the raw snippet
-    const preview = snippet ? `'${snippet}'` : 'an unnamed element';
-    return `${verb} ${kind} ${preview}.`;
+    // Extra, more specific row when the snippet is a recognizable statement.
+    const stmt = analyzeStatement(snippet);
+    if (stmt) {
+        const extra = describeStatement(actionType, stmt);
+        if (extra) lines.push(extra);
+    }
+
+    return lines;
 }
 
 function parseGumTreeSummary(json, oldPath, newPath) {
@@ -140,7 +244,7 @@ function parseGumTreeSummary(json, oldPath, newPath) {
         const rawTree = action.tree || '';
         const rawLabel = action.label || '';
 
-        const { elementType, start, end } = parseTreeField(rawTree);
+        const { elementType, inlineLabel, start, end } = parseTreeField(rawTree);
 
         const sourceFile = (type === 'delete-node' || type === 'delete-tree') ? oldPath : newPath;
         const snippet = rawLabel || extractSnippet(sourceFile, start, end);
@@ -165,7 +269,11 @@ function parseGumTreeSummary(json, oldPath, newPath) {
         }
 
         details.push(`    ${type} | type: ${elementType} | snippet: ${snippet || '(unavailable)'}`);
-        logicNotes.push(describeAction(type, elementType, snippet));
+        logicNotes.push(...describeAction(type, elementType, snippet, {
+            oldLabel: inlineLabel,
+            contextFile: oldPath,
+            contextOffset: end
+        }));
     }
 
     const meaningfulCount = summary.inserts + summary.deletes + summary.updates + summary.other;
@@ -198,7 +306,7 @@ function runGumTreeDiff(oldPath, newPath) {
 
         fs.appendFileSync(DIFF_LOG, header + detailBody + logicBody + '\n');
 
-        launchWebDiff(oldPath, newPath);
+        setLatestPair(oldPath, newPath);
     });
 }
 
@@ -206,6 +314,8 @@ module.exports = {
     runGumTreeDiff,
     parseGumTreeSummary,
     describeAction,
+    describeStatement,
+    analyzeStatement,
     humanizeType,
     analyzeSnippet
 };

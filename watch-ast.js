@@ -67,3 +67,19 @@ init().catch(err => {
     console.error('Failed to initialize:', err);
     process.exit(1);
 });
+
+const { startWebDiffServer, stopWebDiffServer } = require('./watch-ast-webdiffService');
+
+async function init() {
+    await initParser();
+    ensureSnapshotDir();
+    startWebDiffServer();   // <-- live on :4567 the instant the script starts
+
+    fs.watch(TARGET_FILE, { persistent: true }, debounce(onFileChanged, 150));
+    console.log(`Watching ${TARGET_FILE}...`);
+}
+
+process.on('SIGINT', () => {
+    stopWebDiffServer();
+    process.exit(0);
+});

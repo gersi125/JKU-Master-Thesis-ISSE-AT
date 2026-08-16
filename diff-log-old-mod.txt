@@ -1,0 +1,243 @@
+
+[2026-07-20T21:48:40.046Z] Person_2026-07-20T21-48-35-575Z.cs -> Person_2026-07-20T21-48-39-388Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: property [43,71] | name: (unnamed)
+  Logic changes:
+    - Removed property [43,71] an unnamed element from the script.
+
+[2026-07-20T22:17:54.607Z] Person_2026-07-20T22-17-52-206Z.cs -> Person_2026-07-20T22-17-53-909Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property [87,115] | name: (unnamed)
+  Logic changes:
+    - Added property [87,115] an unnamed element to the script.
+
+[2026-07-20T22:33:23.345Z] Person_2026-07-20T22-33-04-263Z.cs -> Person_2026-07-20T22-33-22-621Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Age = age;
+  Logic changes:
+    - Removed expr_stmt 'Age = age;'.
+
+[2026-07-20T22:34:10.015Z] Person_2026-07-20T22-33-23-815Z.cs -> Person_2026-07-20T22-34-09-351Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: public int Age { get; set; }
+  Logic changes:
+    - Added property 'Age' — declared type: int, no initial value assigned.
+
+[2026-07-20T22:34:32.419Z] Person_2026-07-20T22-34-11-158Z.cs -> Person_2026-07-20T22-34-31-774Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Age = age;
+  Logic changes:
+    - Added expr_stmt 'Age = age;'.
+
+[2026-07-20T22:35:02.044Z] Person_2026-07-20T22-34-31-774Z.cs -> Person_2026-07-20T22-35-01-400Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: constructor | snippet: public Person()
+  Logic changes:
+    - Added function Object() { [native code] } 'public Person()'.
+
+[2026-07-20T22:35:32.917Z] Person_2026-07-20T22-35-02-598Z.cs -> Person_2026-07-20T22-35-32-256Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: constructor | snippet: public Person()
+  Logic changes:
+    - Removed function Object() { [native code] } 'public Person()'.
+
+[2026-07-30T11:37:41.071Z] Person_2026-07-30T11-37-30-427Z.cs -> Person_2026-07-30T11-37-39-194Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: property | snippet: public string Name { get; set; }
+  Logic changes:
+    - Removed property 'Name' — declared type: string, no initial value assigned.
+
+[2026-07-30T11:39:40.683Z] Person_2026-07-30T11-39-31-389Z.cs -> Person_2026-07-30T11-39-39-788Z.cs: 1 insert, 0 delete, 0 update
+    insert-node | type: specifier: public [72,78] | snippet: (unavailable)
+  Logic changes:
+    - Added specifier: public [72,78] an unnamed element.
+
+[2026-07-30T11:40:09.956Z] Person_2026-07-30T11-39-39-788Z.cs -> Person_2026-07-30T11-40-08-862Z.cs: 1 insert, 1 delete, 0 update
+    insert-tree | type: property | snippet: public int Age { get; set; }
+    delete-node | type: specifier: public [72,78] | snippet: (unavailable)
+  Logic changes:
+    - Added property 'Age' — declared type: int, no initial value assigned.
+    - Removed specifier: public [72,78] an unnamed element.
+
+[2026-07-30T11:53:51.600Z] Person_2026-07-30T11-53-46-597Z.cs -> Person_2026-07-30T11-53-50-269Z.cs: 1 insert, 0 delete, 0 update
+    insert-node | type: specifier: private [83,90] | snippet: (unavailable)
+  Logic changes:
+    - Added specifier: private [83,90] an unnamed element.
+
+[2026-07-30T11:54:06.072Z] Person_2026-07-30T11-53-50-269Z.cs -> Person_2026-07-30T11-54-04-914Z.cs: 1 insert, 1 delete, 0 update
+    insert-tree | type: decl_stmt | snippet: private void Method;
+    delete-node | type: specifier: private [83,90] | snippet: (unavailable)
+  Logic changes:
+    - Added decl_stmt 'private void Method;'.
+    - Removed specifier: private [83,90] an unnamed element.
+
+[2026-07-30T11:54:26.326Z] Person_2026-07-30T11-54-04-914Z.cs -> Person_2026-07-30T11-54-25-062Z.cs: 4 insert, 3 delete, 0 update (1 reorder ignored)
+    insert-node | type: function | snippet: private void MethDec() {}
+    insert-node | type: name: MethDec [96,103] | snippet: (unavailable)
+    insert-node | type: parameter_list | snippet: ()
+    insert-tree | type: block | snippet: {}
+    delete-node | type: name: Method [96,102] | snippet: (unavailable)
+    delete-node | type: decl | snippet: private void Method
+    delete-node | type: decl_stmt | snippet: private void Method;
+  Logic changes:
+    - Added function 'private void MethDec() {}'.
+    - Added name: MethDec [96,103] an unnamed element.
+    - Added parameter_list '()'.
+    - Added block '{}'.
+    - Removed name: Method [96,102] an unnamed element.
+    - Removed decl 'private void Method'.
+    - Removed decl_stmt 'private void Method;'.
+
+[2026-07-30T11:54:28.252Z] Person_2026-07-30T11-54-25-062Z.cs -> Person_2026-07-30T11-54-26-919Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Console.WriteLine("Method Declaration");
+  Logic changes:
+    - Added expr_stmt 'Console.WriteLine("Method Declaration");'.
+
+[2026-07-30T11:56:41.806Z] Person_2026-07-30T11-54-28-297Z.cs -> Person_2026-07-30T11-56-40-674Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: parameter | snippet: bool isActive
+  Logic changes:
+    - Added parameter 'bool isActive'.
+
+[2026-07-30T11:57:02.912Z] Person_2026-07-30T11-56-40-674Z.cs -> Person_2026-07-30T11-57-01-590Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Ag++;
+  Logic changes:
+    - Added expr_stmt 'Ag++;'.
+
+[2026-07-30T11:57:05.726Z] Person_2026-07-30T11-57-01-590Z.cs -> Person_2026-07-30T11-57-04-751Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: name: Ag [279,281] | snippet: Age
+  Logic changes:
+    - Modified name: Ag [279,281] 'Age'.
+
+[2026-08-15T19:10:38.578Z] Person_2026-08-15T19-10-28-343Z.cs -> Person_2026-08-15T19-10-37-930Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: property | snippet: public int Age { get; set; }
+  Logic changes:
+    - Removed property 'Age' — declared type: int, no initial value assigned.
+
+[2026-08-15T21:11:02.008Z] Person_2026-08-15T21-10-56-748Z.cs -> Person_2026-08-15T21-11-01-017Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private string Name { get; set; }
+  Logic changes:
+    - Added property 'Name' — declared type: string, no initial value assigned.
+
+[2026-08-15T21:12:29.848Z] Person_2026-08-15T21-11-01-017Z.cs -> Person_2026-08-15T21-12-29-131Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Age ++;
+  Logic changes:
+    - Added expr_stmt 'Age ++;'.
+
+[2026-08-16T08:26:30.264Z] Person_2026-08-16T08-26-04-656Z.cs -> Person_2026-08-16T08-26-28-539Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Age ++;
+  Logic changes:
+    - Removed expr_stmt 'Age ++;'.
+
+[2026-08-16T08:31:21.530Z] Person_2026-08-16T08-31-08-966Z.cs -> Person_2026-08-16T08-31-20-351Z.cs: 1 insert, 0 delete, 0 update
+    insert-node | type: specifier: private [131,138] | snippet: (unavailable)
+  Logic changes:
+    - Added specifier: private [131,138] an unnamed element.
+
+[2026-08-16T08:35:38.081Z] Person_2026-08-16T08-35-28-108Z.cs -> Person_2026-08-16T08-35-36-994Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: property | snippet: private int Age { get; set; }
+  Logic changes:
+    - Removed property 'Age' — declared type: int, no initial value assigned.
+
+[2026-08-16T08:40:28.285Z] Person_2026-08-16T08-40-22-760Z.cs -> Person_2026-08-16T08-40-27-279Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private string Name { get; set; }
+  Logic changes:
+    - Added property 'Name' — declared type: string, no initial value assigned.
+
+[2026-08-16T10:11:07.706Z] Person_2026-08-16T10-10-33-922Z.cs -> Person_2026-08-16T10-11-07-003Z.cs: 1 insert, 0 delete, 1 update
+    insert-node | type: specifier: private [79,86] | snippet: (unavailable)
+    update-node | type: name: privat [79,85] | snippet: int
+  Logic changes:
+    - Added specifier: private [79,86] an unnamed element.
+    - Modified name: privat [79,85] 'int'.
+
+[2026-08-16T10:12:56.234Z] Person_2026-08-16T10-12-46-190Z.cs -> Person_2026-08-16T10-12-55-483Z.cs: 1 insert, 0 delete, 0 update
+    insert-node | type: specifier: private [132,139] | snippet: (unavailable)
+  Logic changes:
+    - Added specifier: private [132,139] an unnamed element.
+
+[2026-08-16T10:13:12.599Z] Person_2026-08-16T10-12-55-483Z.cs -> Person_2026-08-16T10-13-11-943Z.cs: 1 insert, 1 delete, 0 update
+    insert-tree | type: function | snippet: private void GetNAme() {
+    delete-node | type: specifier: private [132,139] | snippet: (unavailable)
+  Logic changes:
+    - Added function 'private void GetNAme() {'.
+    - Removed specifier: private [132,139] an unnamed element.
+
+[2026-08-16T10:13:24.546Z] Person_2026-08-16T10-13-11-943Z.cs -> Person_2026-08-16T10-13-23-799Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: name: GetNAme [132,139] | snippet: GetNName
+  Logic changes:
+    - Modified name: GetNAme [132,139] 'GetNName'.
+
+[2026-08-16T10:14:12.405Z] Person_2026-08-16T10-14-03-701Z.cs -> Person_2026-08-16T10-14-11-531Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: name: GetNName [132,140] | snippet: GetName
+  Logic changes:
+    - Modified name: GetNName [132,140] 'GetName'.
+
+[2026-08-16T10:19:58.690Z] Person_2026-08-16T10-19-44-062Z.cs -> Person_2026-08-16T10-19-57-892Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: name | snippet: MethodDeclaration
+  Logic changes:
+    - Renamed method 'MethDec' to 'MethodDeclaration'.
+
+[2026-08-16T10:20:02.405Z] Person_2026-08-16T10-19-59-637Z.cs -> Person_2026-08-16T10-20-01-770Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: function | snippet: private void MethodDeclaration (bool isActive) {
+  Logic changes:
+    - Removed function 'private void MethodDeclaration (bool isActive) {'.
+
+[2026-08-16T10:20:37.841Z] Person_2026-08-16T10-20-03-270Z.cs -> Person_2026-08-16T10-20-37-206Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: property | snippet: private int Age { get; set; }
+  Logic changes:
+    - Removed property 'Age' — declared type: int, no initial value assigned.
+
+[2026-08-16T10:20:54.448Z] Person_2026-08-16T10-20-37-206Z.cs -> Person_2026-08-16T10-20-53-834Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: function | snippet: private void ExtractName() {
+  Logic changes:
+    - Removed function 'private void ExtractName() {'.
+
+[2026-08-16T10:21:03.127Z] Person_2026-08-16T10-20-53-834Z.cs -> Person_2026-08-16T10-21-02-486Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Age++;
+  Logic changes:
+    - Added expr_stmt 'Age++;'.
+
+[2026-08-16T10:28:19.733Z] Person_2026-08-16T10-28-15-035Z.cs -> Person_2026-08-16T10-28-19-122Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Age++;
+  Logic changes:
+    - Added statement 'Age++;'.
+    - Variable 'Age' was incremented by 1.
+
+[2026-08-16T10:28:27.736Z] Person_2026-08-16T10-28-19-122Z.cs -> Person_2026-08-16T10-28-27-091Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Age++;
+  Logic changes:
+    - Removed statement 'Age++;'.
+    - Variable 'Age' is no longer incremented here.
+
+[2026-08-16T10:28:59.519Z] Person_2026-08-16T10-28-28-408Z.cs -> Person_2026-08-16T10-28-58-899Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Name="John";
+  Logic changes:
+    - Added statement 'Name="John";'.
+    - Variable 'Name' was set to "John".
+
+[2026-08-16T10:29:37.418Z] Person_2026-08-16T10-28-58-899Z.cs -> Person_2026-08-16T10-29-36-802Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Age = 25;
+  Logic changes:
+    - Added statement 'Age = 25;'.
+    - Variable 'Age' was set to 25.
+
+[2026-08-16T10:30:25.739Z] Person_2026-08-16T10-29-36-802Z.cs -> Person_2026-08-16T10-30-25-070Z.cs: 2 insert, 0 delete, 0 update
+    insert-tree | type: using | snippet: using System.Security.Cryptography;
+    insert-tree | type: property | snippet: private int Age { get; set; }
+  Logic changes:
+    - Added using 'using System.Security.Cryptography;'.
+    - Added property 'Age' — declared type: int, no initial value assigned.
+
+[2026-08-16T11:42:53.052Z] Person_2026-08-16T11-42-41-084Z.cs -> Person_2026-08-16T11-42-52-396Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private string Gender { get; set; }
+  Logic changes:
+    - Added property 'Gender' — declared type: string, no initial value assigned.
+
+[2026-08-16T11:43:13.612Z] Person_2026-08-16T11-42-53-461Z.cs -> Person_2026-08-16T11-43-12-998Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: parameter | snippet: string gender
+  Logic changes:
+    - Added parameter 'string gender'.
+
+[2026-08-16T11:43:34.291Z] Person_2026-08-16T11-43-12-998Z.cs -> Person_2026-08-16T11-43-33-550Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Gender = gender;
+  Logic changes:
+    - Added statement 'Gender = gender;'.
+    - Variable 'Gender' was set to gender.
+
+[2026-08-16T11:43:58.977Z] Person_2026-08-16T11-43-33-550Z.cs -> Person_2026-08-16T11-43-58-352Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: property | snippet: private string Gender { get; set; }
+  Logic changes:
+    - Removed property 'Gender' — declared type: string, no initial value assigned.
+
