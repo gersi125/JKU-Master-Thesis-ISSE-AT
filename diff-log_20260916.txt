@@ -1,0 +1,293 @@
+
+[2026-09-04T09:53:34.666Z] Person_2026-09-04T09-53-18-768Z.cs -> Person_2026-09-04T09-53-33-972Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: parameter | snippet: string phoneNumber
+  Logic changes:
+    - Added parameter 'phoneNumber' — parameter type: string.
+    - Element 'string phoneNumber' was inserted at position 4 of 4 in the parameter list of constructor 'Person'.
+
+[2026-09-04T09:53:37.224Z] Person_2026-09-04T09-53-33-972Z.cs -> Person_2026-09-04T09-53-36-502Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: PhoneNumber = phoneNumber;
+  Logic changes:
+    - Variable 'PhoneNumber' was set to phoneNumber.
+
+[2026-09-04T22:53:02.092Z] Person_2026-09-04T09-53-36-502Z.cs -> Person_2026-09-04T22-53-00-875Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private string Email{get; set;}
+  Logic changes:
+    - Added property 'Email' — declared type: string, no initial value assigned — access: private.
+
+[2026-09-04T22:53:25.514Z] Person_2026-09-04T22-53-00-875Z.cs -> Person_2026-09-04T22-53-24-192Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Email = email;
+  Logic changes:
+    - Variable 'Email' was set to email.
+
+[2026-09-04T22:53:55.101Z] Person_2026-09-04T22-53-24-192Z.cs -> Person_2026-09-04T22-53-53-524Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: parameter | snippet: string email
+  Logic changes:
+    - Added parameter 'email' — parameter type: string.
+    - Element 'string email' was inserted at position 5 of 5 in the parameter list of constructor 'Person'.
+
+[2026-09-04T23:04:30.503Z] Person_2026-09-04T22-53-53-524Z.cs -> Person_2026-09-04T23-04-29-120Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: parameter | snippet: string email
+  Logic changes:
+    - Removed parameter 'email' — parameter type: string.
+    - Element 'string email' was removed from position 5 of 5 in the parameter list of constructor 'Person'.
+
+[2026-09-09T11:24:41.425Z] Person_2026-09-09T11-24-21-317Z.cs -> Person_2026-09-09T11-24-39-668Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: PhoneNumber = phoneNumber;
+  Logic changes:
+    - Variable 'PhoneNumber' is no longer set to phoneNumber here.
+
+[2026-09-09T11:25:07.333Z] Person_2026-09-09T11-24-39-668Z.cs -> Person_2026-09-09T11-25-06-524Z.cs: 0 insert, 3 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Name = name;
+    delete-tree | type: expr_stmt | snippet: Age = age;
+    delete-tree | type: expr_stmt | snippet: Address = address;
+  Logic changes:
+    - Variable 'Name' is no longer set to name here.
+    - Variable 'Age' is no longer set to age here.
+    - Variable 'Address' is no longer set to address here.
+
+[2026-09-09T11:25:25.066Z] Person_2026-09-09T11-25-06-524Z.cs -> Person_2026-09-09T11-25-24-305Z.cs: 0 insert, 3 delete, 0 update
+    delete-tree | type: property | snippet: private string Address{get; set;}
+    delete-tree | type: property | snippet: private string PhoneNumber{get; set;}
+    delete-tree | type: property | snippet: private string Email{get; set;}
+  Logic changes:
+    - Removed property 'Address' — declared type: string, no initial value assigned — access: private.
+    - Removed property 'PhoneNumber' — declared type: string, no initial value assigned — access: private.
+    - Removed property 'Email' — declared type: string, no initial value assigned — access: private.
+
+[2026-09-09T11:25:29.213Z] Person_2026-09-09T11-25-24-305Z.cs -> Person_2026-09-09T11-25-28-363Z.cs: 3 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private string Address{get; set;}
+    insert-tree | type: property | snippet: private string PhoneNumber{get; set;}
+    insert-tree | type: property | snippet: private string Email{get; set;}
+  Logic changes:
+    - Added property 'Address' — declared type: string, no initial value assigned — access: private.
+    - Added property 'PhoneNumber' — declared type: string, no initial value assigned — access: private.
+    - Added property 'Email' — declared type: string, no initial value assigned — access: private.
+
+[2026-09-09T11:29:14.647Z] Person_2026-09-09T11-25-28-363Z.cs -> Person_2026-09-09T11-29-13-616Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: else | snippet: else
+  Logic changes:
+    - Added if condition: 'if (age < 0) { ... }'.
+    - Added throw statement: throws 'ArgumentException' with arguments: "Age cannot be negative".
+    - Variable 'age' was incremented by 1.
+    - Variable 'Age' was set to age.
+
+[2026-09-09T11:29:56.995Z] Person_2026-09-09T11-29-13-616Z.cs -> Person_2026-09-09T11-29-56-187Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: if_stmt | snippet: if (age < 0)
+  Logic changes:
+    - Removed if condition: 'if (age < 0) { ... }'.
+    - Removed throw statement: throws 'ArgumentException' with arguments: "Age cannot be negative".
+    - Variable 'age' is no longer incremented here.
+    - Variable 'Age' is no longer set to age here.
+
+[2026-09-09T11:30:03.592Z] Person_2026-09-09T11-29-56-187Z.cs -> Person_2026-09-09T11-30-02-775Z.cs: 4 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: this.Age = age;
+    insert-tree | type: expr_stmt | snippet: this.Name = name;
+    insert-tree | type: expr_stmt | snippet: this.Address = address;
+    insert-tree | type: expr_stmt | snippet: this.PhoneNumber = phoneNumber;
+  Logic changes:
+    - Added statement 'this.Age = age;'.
+    - Added statement 'this.Name = name;'.
+    - Added statement 'this.Address = address;'.
+    - Added statement 'this.PhoneNumber = phoneNumber;'.
+
+[2026-09-09T11:32:35.570Z] Person_2026-09-09T11-30-02-775Z.cs -> Person_2026-09-09T11-32-34-017Z.cs: 0 insert, 3 delete, 0 update
+    delete-tree | type: property | snippet: private string Address{get; set;}
+    delete-tree | type: property | snippet: private string PhoneNumber{get; set;}
+    delete-tree | type: property | snippet: private string Email{get; set;}
+  Logic changes:
+    - Removed property 'Address' — declared type: string, no initial value assigned — access: private.
+    - Removed property 'PhoneNumber' — declared type: string, no initial value assigned — access: private.
+    - Removed property 'Email' — declared type: string, no initial value assigned — access: private.
+
+[2026-09-09T11:33:02.310Z] Person_2026-09-09T11-32-34-017Z.cs -> Person_2026-09-09T11-33-01-016Z.cs: 3 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private string Address{get; set;}
+    insert-tree | type: property | snippet: private string PhoneNumber{get; set;}
+    insert-tree | type: property | snippet: private string Email{get; set;}
+  Logic changes:
+    - Added property 'Address' — declared type: string, no initial value assigned — access: private.
+    - Added property 'PhoneNumber' — declared type: string, no initial value assigned — access: private.
+    - Added property 'Email' — declared type: string, no initial value assigned — access: private.
+
+[2026-09-09T11:33:16.950Z] Person_2026-09-09T11-33-01-016Z.cs -> Person_2026-09-09T11-33-15-324Z.cs: 0 insert, 4 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: this.Age = age;
+    delete-tree | type: expr_stmt | snippet: this.Name = name;
+    delete-tree | type: expr_stmt | snippet: this.Address = address;
+    delete-tree | type: expr_stmt | snippet: this.PhoneNumber = phoneNumber;
+  Logic changes:
+    - Removed statement 'this.Age = age;'.
+    - Removed statement 'this.Name = name;'.
+    - Removed statement 'this.Address = address;'.
+    - Removed statement 'this.PhoneNumber = phoneNumber;'.
+
+[2026-09-09T11:33:21.765Z] Person_2026-09-09T11-33-15-324Z.cs -> Person_2026-09-09T11-33-20-427Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: if_stmt | snippet: if (age < 0)
+  Logic changes:
+    - Added if condition: 'if (age < 0) { ... }'.
+    - Added throw statement: throws 'ArgumentException' with arguments: "Age cannot be negative.".
+
+[2026-09-09T11:35:17.403Z] Person_2026-09-09T11-33-20-427Z.cs -> Person_2026-09-09T11-35-16-092Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: property | snippet: private string Email{get; set;}
+  Logic changes:
+    - Removed property 'Email' — declared type: string, no initial value assigned — access: private.
+
+[2026-09-09T11:35:19.131Z] Person_2026-09-09T11-35-16-092Z.cs -> Person_2026-09-09T11-35-18-120Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private string Email{get; set;}
+  Logic changes:
+    - Added property 'Email' — declared type: string, no initial value assigned — access: private.
+
+[2026-09-09T11:37:08.565Z] Person_2026-09-09T11-35-38-899Z.cs -> Person_2026-09-09T11-37-07-505Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: name | snippet: Teacher
+  Logic changes:
+    - Renamed property 'Person' to 'Teacher'.
+
+[2026-09-09T11:37:50.332Z] Person_2026-09-09T11-37-07-505Z.cs -> Person_2026-09-09T11-37-49-264Z.cs: 1 insert, 0 delete, 1 update
+    update-node | type: name | snippet: Teacher
+    insert-tree | type: parameter | snippet: string email
+  Logic changes:
+    - Renamed method 'Person' to 'Teacher'.
+    - Added parameter 'email' — parameter type: string.
+    - Element 'string email' was inserted at position 4 of 5 in the parameter list of constructor 'Teacher'.
+
+[2026-09-09T11:41:35.174Z] Person_2026-09-09T11-40-47-454Z.cs -> Person_2026-09-09T11-41-34-228Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: parameter | snippet: string name
+  Logic changes:
+    - Added parameter 'name' — parameter type: string.
+    - Element 'string name' was inserted at position 4 of 6 in the parameter list of constructor 'Teacher'.
+
+[2026-09-09T11:42:19.033Z] Person_2026-09-09T11-41-34-228Z.cs -> Person_2026-09-09T11-42-18-000Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: parameter | snippet: string name
+  Logic changes:
+    - Removed parameter 'name' — parameter type: string.
+    - Element 'string name' was removed from position 4 of 6 in the parameter list of constructor 'Teacher'.
+
+[2026-09-09T11:44:58.561Z] Person_2026-09-09T11-42-37-267Z.cs -> Person_2026-09-09T11-44-57-631Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: else | snippet: else
+  Logic changes:
+    - Added if condition: 'if (age < 0) { ... }'.
+    - Added throw statement: throws 'ArgumentException' with arguments: "Age cannot be negative.".
+    - Variable 'Age' was set to age.
+
+[2026-09-09T11:45:42.460Z] Person_2026-09-09T11-44-57-631Z.cs -> Person_2026-09-09T11-45-41-349Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: This.Address = address;
+  Logic changes:
+    - Added statement 'This.Address = address;'.
+
+[2026-09-09T11:46:59.142Z] Person_2026-09-09T11-45-41-349Z.cs -> Person_2026-09-09T11-46-58-080Z.cs: 5 insert, 0 delete, 0 update (1 reorder ignored)
+    insert-node | type: if_stmt | snippet: if (Age >0)
+    insert-node | type: if | snippet: if (Age >0)
+    insert-tree | type: condition | snippet: (Age >0)
+    insert-node | type: block | snippet: (unavailable)
+    insert-node | type: block_content | snippet: (unavailable)
+  Logic changes:
+    - Added if_stmt 'if (Age >0)'.
+    - Added if 'if (Age >0)'.
+    - Added if condition: 'if (Age >0) This.Address = address;'.
+    - Added statement 'This.Address = address;'.
+    - Added block an unnamed element.
+    - Added block_content an unnamed element.
+
+[2026-09-09T11:47:03.732Z] Person_2026-09-09T11-46-58-080Z.cs -> Person_2026-09-09T11-47-02-647Z.cs: 5 insert, 0 delete, 0 update (1 reorder ignored)
+    insert-node | type: operator | snippet: &&
+    insert-node | type: name | snippet: Age
+    insert-node | type: operator | snippet: <
+    insert-node | type: literal | snippet: 18
+    insert-tree | type: throw | snippet: throw new ArgumentException("Age cannot be less than 18.");
+  Logic changes:
+    - Added operator '&&'.
+    - Added name 'Age'.
+    - Added operator '<'.
+    - Added literal '18'.
+    - Added throw statement: throws 'ArgumentException' with arguments: "Age cannot be less than 18.".
+
+[2026-09-09T11:47:04.742Z] Person_2026-09-09T11-47-02-647Z.cs -> Person_2026-09-09T11-47-03-652Z.cs: 0 insert, 5 delete, 0 update (1 reorder ignored)
+    delete-node | type: operator | snippet: &&
+    delete-node | type: name | snippet: Age
+    delete-node | type: operator | snippet: <
+    delete-node | type: literal | snippet: 18
+    delete-tree | type: throw | snippet: throw new ArgumentException("Age cannot be less than 18.");
+  Logic changes:
+    - Removed operator '&&'.
+    - Removed name 'Age'.
+    - Removed operator '<'.
+    - Removed literal '18'.
+    - Removed throw statement: throws 'ArgumentException' with arguments: "Age cannot be less than 18.".
+
+[2026-09-09T11:48:06.885Z] Person_2026-09-09T11-47-43-429Z.cs -> Person_2026-09-09T11-48-05-754Z.cs: 0 insert, 5 delete, 0 update (9 reorder ignored)
+    delete-tree | type: condition | snippet: (Age >0)
+    delete-node | type: if | snippet: if (Age >0) {
+    delete-node | type: if_stmt | snippet: if (Age >0) {
+    delete-node | type: block_content | snippet: (unavailable)
+    delete-node | type: block | snippet: {
+  Logic changes:
+    - Removed if condition: 'if (Age >0) { ... }'.
+    - Removed statement 'This.Address = address;'.
+    - Removed if 'if (Age >0) {'.
+    - Removed if_stmt 'if (Age >0) {'.
+    - Removed block_content an unnamed element.
+    - Removed block '{'.
+
+[2026-09-09T11:52:03.703Z] Person_2026-09-09T11-48-26-054Z.cs -> Person_2026-09-09T11-52-02-677Z.cs: 0 insert, 0 delete, 2 update
+    update-node | type: name | snippet: DateofBirth
+    update-node | type: name | snippet: DateofBirth
+  Logic changes:
+    - Renamed property 'Age' to 'DateofBirth'.
+    - Renamed variable 'Age' to 'DateofBirth'.
+
+[2026-09-09T11:53:01.798Z] Person_2026-09-09T11-52-02-677Z.cs -> Person_2026-09-09T11-53-00-730Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: DateofBIRTH = 12222;
+  Logic changes:
+    - Variable 'DateofBIRTH' was set to 12222.
+
+[2026-09-09T11:53:17.968Z] Person_2026-09-09T11-53-00-730Z.cs -> Person_2026-09-09T11-53-16-992Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: name | snippet: DateofBirth
+  Logic changes:
+    - Renamed variable 'DateofBIRTH' to 'DateofBirth'.
+
+[2026-09-09T11:53:43.558Z] Person_2026-09-09T11-53-27-633Z.cs -> Person_2026-09-09T11-53-42-377Z.cs: 0 insert, 0 delete, 3 update
+    update-node | type: name | snippet: Age
+    update-node | type: name | snippet: Age
+    update-node | type: name | snippet: Age
+  Logic changes:
+    - Renamed property 'DateofBirth' to 'Age'.
+    - Renamed variable 'DateofBirth' to 'Age'.
+    - Renamed variable 'DateofBirth' to 'Age'.
+
+[2026-09-09T11:55:32.124Z] Person_2026-09-09T11-53-42-377Z.cs -> Person_2026-09-09T11-55-31-195Z.cs: 5 insert, 0 delete, 0 update (5 reorder ignored)
+    insert-node | type: class | snippet: public class NewBaseType
+    insert-node | type: specifier | snippet: public
+    insert-node | type: name | snippet: NewBaseType
+    insert-node | type: block | snippet: {
+    insert-tree | type: super_list | snippet: : NewBaseType
+  Logic changes:
+    - Added class 'public class NewBaseType'.
+    - Added specifier 'public'.
+    - Added name 'NewBaseType'.
+    - Added block '{'.
+    - Added super_list ': NewBaseType'.
+
+[2026-09-17T18:41:59.022Z] Person_2026-09-17T18-41-25-855Z.cs -> Person_2026-09-17T18-41-58-327Z.cs: 0 insert, 0 delete, 0 update, 1 move
+    move-tree | type: parameter | 'age' (int) moved from named-index 0 to named-index 1
+  Logic changes:
+    - Moved parameter 'age' (int) in constructor 'Teacher': was position 1 of 5 (before 'address' (string)), now position 2 of 5 (after 'address' (string)).
+
+[2026-09-17T18:42:41.009Z] Person_2026-09-17T18-41-58-327Z.cs -> Person_2026-09-17T18-42-40-354Z.cs: 0 insert, 0 delete, 0 update, 1 move
+    move-tree | type: property | 'Age' (int) moved from named-index 2 to named-index 4
+  Logic changes:
+    - Moved property 'Age' (int) in class 'NewBaseType': was position 3 of 5 (after 'Name' (string)), now position 5 of 5 (after 'PhoneNumber' (string)).
+
+[2026-09-17T18:43:11.980Z] Person_2026-09-17T18-43-07-228Z.cs -> Person_2026-09-17T18-43-11-280Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: specifier | snippet: public
+  Logic changes:
+    - Renamed variable 'private' to 'public'.
+
+[2026-09-17T19:01:31.605Z] Person_2026-09-17T19-01-03-164Z.cs -> Person_2026-09-17T19-01-30-819Z.cs: 0 insert, 0 delete, 0 update, 1 move
+    move-tree | type: property | 'Age' (int) moved from named-index 4 to named-index 2
+  Logic changes:
+    - Moved property 'Age' (int) in class 'NewBaseType': was position 5 of 5 (after 'PhoneNumber' (string)), now position 3 of 5 (after 'Name' (string)).
+
+[2026-09-17T19:01:49.838Z] Person_2026-09-17T19-01-30-819Z.cs -> Person_2026-09-17T19-01-49-025Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: specifier | snippet: public
+  Logic changes:
+    - Changed access modifier from 'private' to 'public'.
+

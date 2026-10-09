@@ -1,0 +1,83 @@
+5: // structured line per semantic change into diff-log.txt.
+48: function dbg(...args) {
+127: function canonType(rawType) {
+131: function humanizeType(rawType) {
+140: function collapse(text) {
+144: function short(text, max = MAX_TEXT) {
+150: function core(text) {
+156: function headerPreview(collapsedText) {
+162: function joinPath(owner, segment) {
+173: function loadFile(filePath) {
+198: function treeOf(entry) {
+211: function flatText(entry) {
+217: function lineAt(entry, offset) {
+241: function parseTreeField(rawTree) {
+266: function extractSnippet(filePath, start, end) {
+277: function lineNumberAt(filePath, offset) {
+284: function findExactOrSmallestNode(rootNode, start, end) {
+297: function nodeAt(entry, start, end) {
+304: function findSameNode(rootNode, type, start, end) {
+333: function extractModifiers(text) {
+346: function fmtMods(canon, modifiers) {
+372: function splitTopLevelCommas(text) {
+391: function balancedParens(text, openIdx) {
+405: function paramTypes(paramsText) {
+415: function parseSignature(rest, isCtor) {
+429: function analyzeSnippet(elementType, snippet) {
+459: function analyzeAllDeclarators(elementType, snippet) {
+498: function analyzeStatement(snippet) {
+534: function describeStatement(actionType, stmt) {
+547: function statementKind(text, anchorType) {
+622: function isTraceableType(t) {
+626: function isStatementNodeType(t) {
+632: function collectTraceableNodes(node, out, lo = -Infinity, hi = Infinity) {
+642: function findEnclosingStatementNode(node) {
+656: function headText(entry, node, max = 600) {
+661: function declSegment(entry, node) {
+681: function ownerPath(entry, node, includeSelf = false) {
+706: function namedItems(list) {
+715: function positionalInfo(node) {
+735: function listOwner(entry, list) {
+770: function positionSuffix(pos) {
+775: function positionalWhere(entry, pos) {
+784: function lp(line, line2) {
+791: function mk(line, op, kind, where, text) {
+799: function item(text, side, start, end, leaf) {
+804: function declParts(canon, sem, owner) {
+834: function traceNode(op, node, entry) {
+883: function tokenize(text) {
+887: function joinTokens(tokens) {
+901: function describeEdit(oldText, newText) {
+939: function registerRollup(ctx, side, anchor, entry, edit, fallbackItem) {
+961: function synthesizeUpdated(rec) {
+974: function synthesizeBeforeInsert(rec) {
+986: function presentIn(entry, text) {
+993: function rollupItem(rec, oldFull, newFull, lineOld, lineNew) {
+1007: function headSimilarity(oldText, newText) {
+1019: function resolveRollup(ctx) {
+1084: function isTypeDeclarationNode(node) {
+1104: function isNameOf(node) {
+1113: function isSelfReferenceNode(node) {
+1123: function isMemberAccessFieldOfSelfReference(node) {
+1132: function findEnclosingClassName(node) {
+1145: function genericLeafItem(op, elementType, entry, node, start, end, oldLabel, newLabel, side, text) {
+1161: function describeChange(ctx, type, elementType, oldLabel, newLabel, start, end, sourceFile) {
+1273: function describeAction(actionType, elementType, snippet, options = {}) {
+1290: function describeListElementIdentity(elementType, rawText) {
+1304: function findMovedNode(rootNode, s, e) {
+1320: function describeMove(oldPath, newPath, elementType, srcStart, srcEnd, dst, at) {
+1404: function finalizeItems(items) {
+1421: function parseGumTreeSummary(json, oldPath, newPath) {
+1430: function parseGumTreeSummaryInner(json, oldPath, newPath) {
+1534: const meaningfulCount = summary.inserts + summary.deletes + summary.updates + summary.other + summary.moves;
+1544: return { summaryText, actionCount: meaningfulCount, details, logicNotes, highlights };
+1548: function runGumTreeDiff(oldPath, newPath) {
+1549: const cmd = `"${GUMTREE_CMD}" textdiff "${oldPath}" "${newPath}" -f JSON`;
+1576: function runGumtree(oldFile, newFile) {
+1578: const p = spawn(GUMTREE_BAT, ['textdiff', '-f', 'JSON', `"${oldFile}"`, `"${newFile}"`], {
+1593: async function analyzeChange(oldSource, newSource) {
+1606: // It must return an array of strings and the meaningfulCount you already compute.
+1607: const { lines, meaningfulCount } = buildLog(actions, oldSource, newSource);
+1609: return { lines, actions, meaningfulCount };
+1615: module.exports.analyzeChange = analyzeChange; // keep your other exports
+1617: module.exports = {

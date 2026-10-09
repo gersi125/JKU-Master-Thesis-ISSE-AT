@@ -1,98 +1,36 @@
-const { exec, spawn } = require('child_process');
 const http = require('http');
-const path = require('path');
+const fs = require('fs');
 const config = require('./watch-ast-config');
 
-const { GUMTREE_CMD } = config;
-// Fall back to sane defaults if these aren't in your config file yet —
-// add them there if you want to override.
-const WEBDIFF_PUBLIC_PORT   = config.WEBDIFF_PUBLIC_PORT   || 4567;
-const WEBDIFF_INTERNAL_PORT = config.WEBDIFF_INTERNAL_PORT || 4567;
-const WEBDIFF_REFRESH_MS    = config.WEBDIFF_REFRESH_MS    || 1000;
+const { TARGET_FILE, DIFF_LOG } = config;
+const WEBDIFF_PUBLIC_PORT = config.WEBDIFF_PUBLIC_PORT || 4567;
+const WEBDIFF_REFRESH_MS  = config.WEBDIFF_REFRESH_MS  || 1000;
 
-let gumtreeProcess = null;
+
 let publicServer = null;
-let refreshTimer = null;
-let isRegenerating = false;
 
-let latestPair = null;   // { oldPath, newPath } - most recent pair from the pipeline
-let servedPair = null;   // { oldPath, newPath } - what the internal GumTree server currently shows
-let lastUpdated = null;
+// Editable-source state, pushed by watch-ast.js (content) and
+// gumtreeService.js (highlights) whenever the watcher validates something.
+let editorState = { content: '', highlights: [], updatedAt: null };
 
-// Called by gumtreeService.js whenever a new valid diff pair is produced.
-// Just records state — the actual (re)launch happens on the interval below,
-// decoupled from file-change events, so the page is always <= 1s stale.
-function setLatestPair(oldPath, newPath) {
-    latestPair = { oldPath, newPath };
+function setSource(content) {
+    editorState = { content, highlights: [], updatedAt: Date.now() };
 }
 
-function killGumTreeProcess(callback) {
-    if (gumtreeProcess && gumtreeProcess.pid) {
-        const oldPid = gumtreeProcess.pid;
-        gumtreeProcess = null;
-        exec(`taskkill /PID ${oldPid} /T /F`, { windowsHide: true }, (err) => {
-            if (err) {
-                console.log('  -> taskkill note (likely already exited):', err.message);
-            }
-            callback();
-        });
-    } else {
-        callback();
+function setHighlights(highlights) {
+    editorState = { ...editorState, highlights, updatedAt: Date.now() };
+}
+
+const LOG_TAIL_CHARS = 20000; // avoid shipping a huge file to the browser every tick
+
+function readLogTail() {
+    try {
+        const content = fs.readFileSync(DIFF_LOG, 'utf8');
+        if (content.length <= LOG_TAIL_CHARS) return content;
+        return '...(truncated)...\n' + content.slice(-LOG_TAIL_CHARS);
+    } catch (e) {
+        return ''; // log file doesn't exist yet — nothing logged so far
     }
-}
-
-function spawnGumTreeWebDiff(oldPath, newPath) {
-    const cmdLine = `"${GUMTREE_CMD}" webdiff --port ${WEBDIFF_INTERNAL_PORT} "${oldPath}" "${newPath}"`;
-
-    gumtreeProcess = spawn(
-        process.env.ComSpec || 'cmd.exe',
-        ['/d', '/s', '/c', cmdLine],
-        {
-            shell: false,          // we're driving cmd.exe ourselves now
-            detached: true,
-            stdio: 'ignore',
-            windowsHide: true
-        }
-    );
-
-    gumtreeProcess.on('error', (err) => {
-        console.log('  -> gumtree webdiff spawn error:', err.message);
-    });
-
-    gumtreeProcess.unref();
-
-    servedPair = { oldPath, newPath };
-    lastUpdated = Date.now();
-}
-
-// Runs every WEBDIFF_REFRESH_MS, unconditionally regenerating the diff —
-// always-fresh over efficiency, per the chosen design.
-function regenerate() {
-    if (!latestPair || isRegenerating) return;
-
-    const pairChanged = !servedPair ||
-        latestPair.oldPath !== servedPair.oldPath ||
-        latestPair.newPath !== servedPair.newPath;
-
-    if (!pairChanged) return; // nothing new — leave the browser alone
-
-    isRegenerating = true;
-    const { oldPath, newPath } = latestPair;
-    killGumTreeProcess(() => {
-        spawnGumTreeWebDiff(oldPath, newPath);
-        isRegenerating = false;
-    });
-}
-
-function statusJson() {
-    return JSON.stringify({
-        ready: !!servedPair,
-        oldFile: servedPair ? path.basename(servedPair.oldPath) : null,
-        newFile: servedPair ? path.basename(servedPair.newPath) : null,
-        lastUpdated,
-        internalPort: WEBDIFF_INTERNAL_PORT,
-        refreshMs: WEBDIFF_REFRESH_MS
-    });
 }
 
 const WRAPPER_HTML = `<!DOCTYPE html>
@@ -100,57 +38,184 @@ const WRAPPER_HTML = `<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <title>AST Diff Monitor</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
 <style>
   html, body { margin:0; height:100%; font-family: -apple-system, Segoe UI, sans-serif; background:#1e1e1e; }
-  #bar { background:#252526; color:#ccc; padding:6px 12px; font-size:12px; display:flex; justify-content:space-between; }
-  #frame { width:100%; height:calc(100% - 30px); border:none; background:#fff; }
-  #placeholder { color:#888; text-align:center; margin-top:80px; font-size:14px; }
+  #layout { display:flex; height:100%; }
+  .col { flex:1 1 50%; display:flex; flex-direction:column; min-width:0; border-right:1px solid #333; }
+  .col:last-child { border-right:none; }
+  .bar { background:#252526; color:#ccc; padding:6px 12px; font-size:12px; display:flex; justify-content:space-between; flex:0 0 auto; }
+  .body { flex:1 1 auto; position:relative; min-height:0; }
+  #editorHost { position:absolute; inset:0; }
+  .CodeMirror { height:100%; font-size:13px; }
+  .gt-insert { background: rgba(46,160,67,0.35); }
+  .gt-update { background: rgba(210,153,34,0.35); }
+  .gt-delete-widget {
+    background: rgba(248,81,73,0.15);
+    border-left: 3px solid #f85149;
+    color: #f85149;
+    text-decoration: line-through;
+    font-family: monospace;
+    font-size: 12px;
+    padding: 2px 8px;
+    white-space: pre;
+  }
+  .gt-delete-tag { text-decoration: none; color: #888; margin-left: 8px; font-size: 11px; }
+  .status-editing { color:#e2c08d; }
+  .status-synced { color:#89d185; }
+  .status-waiting { color:#888; }
+  #logPane {
+    position:absolute; inset:0; margin:0; overflow:auto;
+    background:#1e1e1e; color:#d4d4d4; font-family: 'Consolas', monospace;
+    font-size:12px; padding:10px; white-space:pre-wrap; word-break:break-word;
+  }
 </style>
 </head>
 <body>
-  <div id="bar">
-    <span id="pairLabel">Waiting for first change...</span>
-    <span id="clock"></span>
+<div id="layout">
+  <div class="col">
+    <div class="bar">
+      <span id="editorLabel">Live editor — last known-good version</span>
+      <span id="editorStatus" class="status-waiting">Loading...</span>
+    </div>
+    <div class="body"><div id="editorHost"></div></div>
   </div>
-  <div id="placeholder">Waiting for the first valid snapshot pair from watch-ast.js...</div>
-  <iframe id="frame" style="display:none"></iframe>
+  <div class="col">
+    <div class="bar">
+      <span id="logLabel">diff-log.txt</span>
+      <span id="logClock"></span>
+    </div>
+    <div class="body"><pre id="logPane">Waiting for log entries...</pre></div>
+  </div>
+</div>
 <script>
   const REFRESH_MS = ${WEBDIFF_REFRESH_MS};
-  const INTERNAL_PORT = ${WEBDIFF_INTERNAL_PORT};
-  const frame = document.getElementById('frame');
-  const placeholder = document.getElementById('placeholder');
-  const pairLabel = document.getElementById('pairLabel');
-  const clock = document.getElementById('clock');
+  const editorStatus = document.getElementById('editorStatus');
 
- let lastSeenUpdate = null;
+  const cm = CodeMirror(document.getElementById('editorHost'), {
+    value: '',
+    mode: 'text/x-csharp',
+    lineNumbers: true,
+    indentUnit: 4
+  });
 
-    async function tick() {
-        try {
-            const res = await fetch('/status', { cache: 'no-store' });
-            const status = await res.json();
-            clock.textContent = new Date().toLocaleTimeString();
+  let dirty = false;
+  let saveTimer = null;
+  let activeMarks = [];
+  let activeWidgets = [];
+  let lastAppliedSourceUpdate = null;
+  let suppressNextChange = false;
 
-            if (!status.ready) {
-                placeholder.style.display = 'block';
-                frame.style.display = 'none';
-                pairLabel.textContent = 'Waiting for first change...';
-                return;
-            }
+  cm.on('change', () => {
+    if (suppressNextChange) { suppressNextChange = false; return; }
+    dirty = true;
+    editorStatus.textContent = 'Editing (unsaved)...';
+    editorStatus.className = 'status-editing';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveNow, 500);
+  });
 
-            placeholder.style.display = 'none';
-            frame.style.display = 'block';
-            pairLabel.textContent = status.oldFile + ' -> ' + status.newFile +
-                ' (updated ' + new Date(status.lastUpdated).toLocaleTimeString() + ')';
-
-            if (status.lastUpdated !== lastSeenUpdate) {
-                lastSeenUpdate = status.lastUpdated;
-                frame.src = 'http://127.0.0.1:' + INTERNAL_PORT + '/?_=' + Date.now();
-            }
-        } catch (e) {
-            pairLabel.textContent = 'Regenerating diff...';
-        }
+  async function saveNow() {
+    const content = cm.getValue();
+    editorStatus.textContent = 'Saving...';
+    try {
+      await fetch('/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+      });
+      dirty = false;
+      editorStatus.textContent = 'Saved - waiting for validation...';
+      editorStatus.className = 'status-waiting';
+    } catch (e) {
+      editorStatus.textContent = 'Save failed';
     }
+  }
 
+  function applyHighlights(highlights) {
+    activeMarks.forEach(m => m.clear());
+    activeMarks = [];
+    activeWidgets.forEach(w => w.clear());
+    activeWidgets = [];
+
+    (highlights || []).forEach(h => {
+      if (h.type === 'insert' || h.type === 'update') {
+        if (h.start == null || h.end == null) return;
+        try {
+          const from = cm.posFromIndex(h.start);
+          const to = cm.posFromIndex(h.end);
+          const cls = h.type === 'insert' ? 'gt-insert' : 'gt-update';
+          activeMarks.push(cm.markText(from, to, { className: cls }));
+        } catch (e) { /* offset out of range - skip this mark */ }
+        return;
+      }
+
+      if (h.type === 'delete') {
+        const lastLine = cm.lastLine();
+        const line = Math.max(0, Math.min(h.lineHint == null ? 0 : h.lineHint, lastLine));
+        const node = document.createElement('div');
+        node.className = 'gt-delete-widget';
+        node.textContent = '- ' + (h.label || '(removed)');
+        const tag = document.createElement('span');
+        tag.className = 'gt-delete-tag';
+        tag.textContent = '(' + (h.elementType || 'element') + ' removed)';
+        node.appendChild(tag);
+        activeWidgets.push(cm.addLineWidget(line, node, { above: true, coverGutter: false }));
+      }
+    });
+  }
+
+  async function pollSource() {
+    try {
+      const res = await fetch('/source', { cache: 'no-store' });
+      const src = await res.json();
+
+      if (!src.updatedAt) {
+        if (!dirty) editorStatus.textContent = 'Waiting for first valid snapshot...';
+        return;
+      }
+
+      if (dirty) return;
+
+      if (src.updatedAt !== lastAppliedSourceUpdate) {
+        const cursor = cm.getCursor();
+        const scroll = cm.getScrollInfo();
+        if (cm.getValue() !== src.content) {
+          suppressNextChange = true;
+          cm.setValue(src.content);
+          cm.setCursor(cursor);
+          cm.scrollTo(scroll.left, scroll.top);
+        }
+        applyHighlights(src.highlights);
+        lastAppliedSourceUpdate = src.updatedAt;
+        editorStatus.textContent = 'Synced (' + new Date(src.updatedAt).toLocaleTimeString() + ')';
+        editorStatus.className = 'status-synced';
+      }
+    } catch (e) { /* retry next tick */ }
+  }
+
+  const logPane = document.getElementById('logPane');
+  const logClock = document.getElementById('logClock');
+  let lastLogLength = -1;
+
+  async function pollLog() {
+    try {
+      const res = await fetch('/log', { cache: 'no-store' });
+      const data = await res.json();
+      logClock.textContent = new Date().toLocaleTimeString();
+
+      if (data.content.length !== lastLogLength) {
+        lastLogLength = data.content.length;
+        const wasAtBottom = logPane.scrollTop + logPane.clientHeight >= logPane.scrollHeight - 20;
+        logPane.textContent = data.content || 'Waiting for log entries...';
+        if (wasAtBottom) logPane.scrollTop = logPane.scrollHeight;
+      }
+    } catch (e) { /* retry next tick */ }
+  }
+
+  function tick() { pollSource(); pollLog(); }
   tick();
   setInterval(tick, REFRESH_MS);
 </script>
@@ -158,14 +223,41 @@ const WRAPPER_HTML = `<!DOCTYPE html>
 </html>`;
 
 function startWebDiffServer() {
-    if (publicServer) return; // already running
+    if (publicServer) return;
 
     publicServer = http.createServer((req, res) => {
-        if (req.url === '/status') {
+        if (req.method === 'GET' && req.url === '/source') {
             res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(statusJson());
+            res.end(JSON.stringify(editorState));
             return;
         }
+        
+        if (req.method === 'GET' && req.url === '/log') {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ content: readLogTail() }));
+            return;
+        }
+
+        if (req.method === 'POST' && req.url === '/save') {
+            let body = '';
+            req.on('data', (chunk) => {
+                body += chunk;
+                if (body.length > 5_000_000) req.destroy();
+            });
+            req.on('end', () => {
+                try {
+                    const { content } = JSON.parse(body);
+                    fs.writeFileSync(TARGET_FILE, content, 'utf8');
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ ok: true }));
+                } catch (e) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ ok: false, error: e.message }));
+                }
+            });
+            return;
+        }
+
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(WRAPPER_HTML);
     });
@@ -177,18 +269,15 @@ function startWebDiffServer() {
     publicServer.on('error', (err) => {
         console.log('  -> webdiff public server error:', err.message);
     });
-
-    refreshTimer = setInterval(regenerate, WEBDIFF_REFRESH_MS);
 }
 
 function stopWebDiffServer() {
-    if (refreshTimer) clearInterval(refreshTimer);
     if (publicServer) publicServer.close();
-    killGumTreeProcess(() => {});
 }
 
 module.exports = {
     startWebDiffServer,
     stopWebDiffServer,
-    setLatestPair
+    setSource,
+    setHighlights
 };

@@ -1,0 +1,380 @@
+[2026-08-16T12:56:23.104Z] Person_2026-08-16T12-55-58-663Z.cs -> Person_2026-08-16T12-56-22-329Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Age = 25;
+  Logic changes:
+    - Removed statement 'Age = 25;'.
+    - Variable 'Age' is no longer set to 25 here.
+
+[2026-08-16T12:56:23.153Z] Person_2026-08-16T12-55-58-663Z.cs -> Person_2026-08-16T12-56-22-330Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Age = 25;
+  Logic changes:
+    - Removed statement 'Age = 25;'.
+    - Variable 'Age' is no longer set to 25 here.
+
+[2026-08-16T12:56:57.788Z] Person_2026-08-16T12-56-49-110Z.cs -> Person_2026-08-16T12-56-57-090Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Name="John";
+  Logic changes:
+    - Removed statement 'Name="John";'.
+    - Variable 'Name' is no longer set to "John" here.
+
+[2026-08-16T12:56:57.905Z] Person_2026-08-16T12-56-49-110Z.cs -> Person_2026-08-16T12-56-57-090Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Name="John";
+  Logic changes:
+    - Removed statement 'Name="John";'.
+    - Variable 'Name' is no longer set to "John" here.
+
+[2026-08-16T12:58:23.648Z] Person_2026-08-16T12-58-21-639Z.cs -> Person_2026-08-16T12-58-22-882Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Age = age;
+  Logic changes:
+    - Removed statement 'Age = age;'.
+    - Variable 'Age' is no longer set to age here.
+
+[2026-08-16T13:09:23.821Z] Person_2026-08-16T13-09-13-943Z.cs -> Person_2026-08-16T13-09-23-154Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Age = age;
+  Logic changes:
+    - Removed statement 'Age = age;'.
+    - Variable 'Age' is no longer set to age here.
+
+[2026-08-16T13:11:52.976Z] Person_2026-08-16T13-09-23-154Z.cs -> Person_2026-08-16T13-11-52-271Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Name = name;
+  Logic changes:
+    - Removed statement 'Name = name;'.
+    - Variable 'Name' is no longer set to name here.
+
+[2026-08-16T16:47:28.968Z] Person_2026-08-16T16-45-18-216Z.cs -> Person_2026-08-16T16-47-28-224Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Name = name;
+  Logic changes:
+    - Added statement 'Name = name;'.
+    - Variable 'Name' was set to name.
+
+[2026-08-16T16:47:49.995Z] Person_2026-08-16T16-47-28-224Z.cs -> Person_2026-08-16T16-47-49-341Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Age = age;
+  Logic changes:
+    - Added statement 'Age = age;'.
+    - Variable 'Age' was set to age.
+
+[2026-08-16T16:48:09.322Z] Person_2026-08-16T16-47-49-341Z.cs -> Person_2026-08-16T16-48-08-550Z.cs: 0 insert, 2 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Name = name;
+    delete-tree | type: expr_stmt | snippet: Age = age;
+  Logic changes:
+    - Removed statement 'Name = name;'.
+    - Variable 'Name' is no longer set to name here.
+    - Removed statement 'Age = age;'.
+    - Variable 'Age' is no longer set to age here.
+
+[2026-08-16T16:48:24.215Z] Person_2026-08-16T16-48-08-550Z.cs -> Person_2026-08-16T16-48-23-481Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private string Gender { get; set; }
+  Logic changes:
+    - Added property 'Gender' — declared type: string, no initial value assigned.
+
+[2026-08-16T16:55:30.787Z] Person_2026-08-16T16-55-05-121Z.cs -> Person_2026-08-16T16-55-30-062Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Name = name;
+  Logic changes:
+    - Added statement 'Name = name;'.
+    - Variable 'Name' was set to name.
+
+[2026-08-16T16:55:46.692Z] Person_2026-08-16T16-55-30-062Z.cs -> Person_2026-08-16T16-55-46-035Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Age++;
+  Logic changes:
+    - Removed statement 'Age++;'.
+    - Variable 'Age' is no longer incremented here.
+
+[2026-08-16T16:56:06.197Z] Person_2026-08-16T16-55-46-035Z.cs -> Person_2026-08-16T16-56-05-526Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Age = age;
+  Logic changes:
+    - Added statement 'Age = age;'.
+    - Variable 'Age' was set to age.
+
+[2026-08-16T17:02:39.256Z] Person_2026-08-16T16-56-05-526Z.cs -> Person_2026-08-16T17-02-38-589Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Gender = gender;
+  Logic changes:
+    - Added statement 'Gender = gender;'.
+    - Variable 'Gender' was set to gender.
+
+[2026-08-16T17:08:45.042Z] Person_2026-08-16T17-08-33-229Z.cs -> Person_2026-08-16T17-08-44-395Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: property | snippet: private string Gender { get; set; }
+  Logic changes:
+    - Removed property 'Gender' — declared type: string, no initial value assigned.
+
+[2026-08-16T17:08:54.399Z] Person_2026-08-16T17-08-44-395Z.cs -> Person_2026-08-16T17-08-53-527Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: expr_stmt | snippet: Age = age;
+  Logic changes:
+    - Removed statement 'Age = age;'.
+    - Variable 'Age' is no longer set to age here.
+
+[2026-08-16T17:09:13.535Z] Person_2026-08-16T17-08-53-527Z.cs -> Person_2026-08-16T17-09-12-730Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: decl_stmt | snippet: Age age;
+  Logic changes:
+    - Added decl_stmt 'Age age;'.
+
+[2026-08-16T17:09:15.404Z] Person_2026-08-16T17-09-12-730Z.cs -> Person_2026-08-16T17-09-14-747Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: decl_stmt | snippet: Age age;
+  Logic changes:
+    - Removed decl_stmt 'Age age;'.
+
+[2026-08-16T17:09:46.050Z] Person_2026-08-16T17-09-14-747Z.cs -> Person_2026-08-16T17-09-45-357Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: property | snippet: private int Age { get; set; }
+  Logic changes:
+    - Removed property 'Age' — declared type: int, no initial value assigned.
+
+[2026-08-16T17:10:03.648Z] Person_2026-08-16T17-09-45-357Z.cs -> Person_2026-08-16T17-10-03-024Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: property | snippet: private string Name { get; set; }
+  Logic changes:
+    - Removed property 'Name' — declared type: string, no initial value assigned.
+
+[2026-08-16T17:17:06.917Z] Person_2026-08-16T17-15-31-775Z.cs -> Person_2026-08-16T17-17-06-217Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private string Name{}
+  Logic changes:
+    - Added property 'Name' — declared type: string, no initial value assigned.
+
+[2026-08-16T17:18:33.944Z] Person_2026-08-16T17-17-06-217Z.cs -> Person_2026-08-16T17-18-33-270Z.cs: 3 insert, 3 delete, 0 update (1 reorder ignored)
+    insert-node | type: function_decl | snippet: private string Name();
+    insert-node | type: name | snippet: Name
+    insert-node | type: parameter_list | snippet: ()
+    delete-node | type: name | snippet: Name
+    delete-node | type: block | snippet: {}
+    delete-node | type: property | snippet: private string Name{}
+  Logic changes:
+    - Added function_decl 'private string Name();'.
+    - Added name 'Name'.
+    - Added parameter_list '()'.
+    - Removed name 'Name'.
+    - Removed block '{}'.
+    - Removed property 'Name' — declared type: string, no initial value assigned.
+
+[2026-08-16T17:18:53.458Z] Person_2026-08-16T17-18-33-270Z.cs -> Person_2026-08-16T17-18-52-807Z.cs: 1 insert, 0 delete, 0 update
+    insert-node | type: specifier | snippet: private
+  Logic changes:
+    - Added specifier 'private'.
+
+[2026-08-16T17:19:01.704Z] Person_2026-08-16T17-18-52-807Z.cs -> Person_2026-08-16T17-19-00-956Z.cs: 0 insert, 1 delete, 0 update
+    delete-node | type: specifier | snippet: private
+  Logic changes:
+    - Removed specifier 'private'.
+
+[2026-08-16T17:19:23.582Z] Person_2026-08-16T17-19-00-956Z.cs -> Person_2026-08-16T17-19-22-948Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: decl_stmt | snippet: Name name;
+  Logic changes:
+    - Added decl_stmt 'Name name;'.
+
+[2026-08-16T17:19:33.130Z] Person_2026-08-16T17-19-22-948Z.cs -> Person_2026-08-16T17-19-32-414Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: decl_stmt | snippet: Age age;
+  Logic changes:
+    - Added decl_stmt 'Age age;'.
+
+[2026-08-16T17:19:52.577Z] Person_2026-08-16T17-19-32-414Z.cs -> Person_2026-08-16T17-19-51-889Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private int Age{}
+  Logic changes:
+    - Added property 'Age' — declared type: int, no initial value assigned.
+
+[2026-08-16T17:19:58.808Z] Person_2026-08-16T17-19-51-889Z.cs -> Person_2026-08-16T17-19-58-138Z.cs: 2 insert, 0 delete, 0 update
+    insert-tree | type: function_decl | snippet: get;
+    insert-tree | type: function_decl | snippet: set;
+  Logic changes:
+    - Added function_decl 'get;'.
+    - Added function_decl 'set;'.
+
+[2026-08-16T17:19:59.983Z] Person_2026-08-16T17-19-58-138Z.cs -> Person_2026-08-16T17-19-59-335Z.cs: 3 insert, 3 delete, 0 update (1 reorder ignored)
+    insert-node | type: property | snippet: private string Name{get; set;}
+    insert-node | type: name | snippet: Name
+    insert-tree | type: block | snippet: {get; set;}
+    delete-node | type: name | snippet: Name
+    delete-node | type: parameter_list | snippet: ()
+    delete-node | type: function_decl | snippet: private string Name();
+  Logic changes:
+    - Added property 'Name' — declared type: string, no initial value assigned.
+    - Added name 'Name'.
+    - Added block '{get; set;}'.
+    - Removed name 'Name'.
+    - Removed parameter_list '()'.
+    - Removed function_decl 'private string Name();'.
+
+[2026-08-16T17:20:45.046Z] Person_2026-08-16T17-19-59-335Z.cs -> Person_2026-08-16T17-20-44-333Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: decl_stmt | snippet: gENDER gender;
+  Logic changes:
+    - Added decl_stmt 'gENDER gender;'.
+
+[2026-08-16T17:20:54.889Z] Person_2026-08-16T17-20-44-333Z.cs -> Person_2026-08-16T17-20-54-167Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: name | snippet: Gender
+  Logic changes:
+    - Renamed variable 'gENDER' to 'Gender'.
+
+[2026-08-16T18:13:38.762Z] Person_2026-08-16T17-20-54-167Z.cs -> Person_2026-08-16T18-13-37-964Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: decl_stmt | snippet: Gender gender;
+  Logic changes:
+    - Removed decl_stmt 'Gender gender;'.
+
+[2026-08-16T20:18:28.860Z] Person_2026-08-16T18-13-37-964Z.cs -> Person_2026-08-16T20-18-28-175Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: decl_stmt | snippet: Gender gender;
+  Logic changes:
+    - Added decl_stmt 'Gender gender;'.
+
+[2026-08-18T11:44:54.640Z] Person_2026-08-18T11-44-40-032Z.cs -> Person_2026-08-18T11-44-52-797Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private int Age{get; set;}
+  Logic changes:
+    - Added property 'Age' — declared type: int, no initial value assigned.
+
+[2026-08-18T11:45:08.783Z] Person_2026-08-18T11-44-52-797Z.cs -> Person_2026-08-18T11-45-07-631Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private string Gender{get; set;}
+  Logic changes:
+    - Added property 'Gender' — declared type: string, no initial value assigned.
+
+[2026-08-28T07:04:08.422Z] Person_2026-08-28T07-03-34-714Z.cs -> Person_2026-08-28T07-04-06-035Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: property | snippet: private int Age{get; set;}
+  Logic changes:
+    - Removed property 'Age' — declared type: int, no initial value assigned.
+
+[2026-08-28T07:05:10.038Z] Person_2026-08-28T07-04-06-035Z.cs -> Person_2026-08-28T07-05-08-944Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: property | snippet: private int Age{get; set;}
+  Logic changes:
+    - Added property 'Age' — declared type: int, no initial value assigned.
+
+[2026-08-28T07:05:29.427Z] Person_2026-08-28T07-05-08-944Z.cs -> Person_2026-08-28T07-05-28-309Z.cs: 0 insert, 3 delete, 0 update
+    delete-tree | type: decl_stmt | snippet: Name name;
+    delete-tree | type: decl_stmt | snippet: Age age;
+    delete-tree | type: decl_stmt | snippet: Gender gender;
+  Logic changes:
+    - Removed decl_stmt 'Name name;'.
+    - Removed decl_stmt 'Age age;'.
+    - Removed decl_stmt 'Gender gender;'.
+
+[2026-08-28T07:05:52.032Z] Person_2026-08-28T07-05-28-309Z.cs -> Person_2026-08-28T07-05-50-828Z.cs: 2 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Name = name;
+    insert-tree | type: expr_stmt | snippet: Age = age;
+  Logic changes:
+    - Added statement 'Name = name;'.
+    - Variable 'Name' was set to name.
+    - Added statement 'Age = age;'.
+    - Variable 'Age' was set to age.
+
+[2026-08-28T07:06:19.735Z] Person_2026-08-28T07-05-50-828Z.cs -> Person_2026-08-28T07-06-18-569Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: parameter | snippet: string name
+  Logic changes:
+    - Removed parameter 'string name'.
+
+[2026-08-28T07:06:36.422Z] Person_2026-08-28T07-06-24-427Z.cs -> Person_2026-08-28T07-06-35-313Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: parameter | snippet: STRING AGER
+  Logic changes:
+    - Added parameter 'STRING AGER'.
+
+[2026-08-28T07:06:39.244Z] Person_2026-08-28T07-06-35-313Z.cs -> Person_2026-08-28T07-06-38-157Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: name | snippet: AGE
+  Logic changes:
+    - Renamed variable 'AGER' to 'AGE'.
+
+[2026-08-28T07:06:52.523Z] Person_2026-08-28T07-06-38-157Z.cs -> Person_2026-08-28T07-06-51-505Z.cs: 0 insert, 0 delete, 2 update
+    update-node | type: name | snippet: age
+    update-node | type: name | snippet: string
+  Logic changes:
+    - Renamed variable 'AGE' to 'age'.
+    - Renamed variable 'STRING' to 'string'.
+
+[2026-08-28T07:07:59.669Z] Person_2026-08-28T07-06-51-505Z.cs -> Person_2026-08-28T07-07-58-265Z.cs: 0 insert, 1 delete, 1 update
+    update-node | type: name | snippet: age
+    delete-node | type: name | snippet: age
+  Logic changes:
+    - Renamed variable 'string' to 'age'.
+    - Removed name 'age'.
+
+[2026-08-28T07:08:01.257Z] Person_2026-08-28T07-07-58-265Z.cs -> Person_2026-08-28T07-08-00-207Z.cs: 1 insert, 0 delete, 1 update
+    insert-node | type: name | snippet: age
+    update-node | type: name | snippet: STRING
+  Logic changes:
+    - Added name 'age'.
+    - Renamed variable 'age' to 'STRING'.
+
+[2026-08-28T07:08:12.503Z] Person_2026-08-28T07-08-00-207Z.cs -> Person_2026-08-28T07-08-11-311Z.cs: 0 insert, 1 delete, 1 update
+    update-node | type: name | snippet: age
+    delete-node | type: name | snippet: age
+  Logic changes:
+    - Renamed variable 'STRING' to 'age'.
+    - Removed name 'age'.
+
+[2026-08-28T07:08:14.479Z] Person_2026-08-28T07-08-11-311Z.cs -> Person_2026-08-28T07-08-13-562Z.cs: 1 insert, 0 delete, 1 update
+    insert-node | type: name | snippet: age
+    update-node | type: name | snippet: string
+  Logic changes:
+    - Added name 'age'.
+    - Renamed variable 'age' to 'string'.
+
+[2026-08-28T07:09:14.952Z] Person_2026-08-28T07-08-13-562Z.cs -> Person_2026-08-28T07-09-13-869Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: name | snippet: strlling
+  Logic changes:
+    - Renamed variable 'string' to 'strlling'.
+
+[2026-08-28T07:11:01.994Z] Person_2026-08-28T07-09-13-869Z.cs -> Person_2026-08-28T07-11-01-090Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: name | snippet: string
+  Logic changes:
+    - Renamed variable 'strlling' to 'string'.
+
+[2026-08-28T07:11:04.913Z] Person_2026-08-28T07-11-01-090Z.cs -> Person_2026-08-28T07-11-03-874Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: name | snippet: name
+  Logic changes:
+    - Renamed variable 'age' to 'name'.
+
+[2026-08-28T07:11:25.428Z] Person_2026-08-28T07-11-03-874Z.cs -> Person_2026-08-28T07-11-24-379Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: parameter | snippet: string gender
+  Logic changes:
+    - Removed parameter 'string gender'.
+
+[2026-08-28T07:15:06.064Z] Person_2026-08-28T07-11-24-379Z.cs -> Person_2026-08-28T07-15-05-163Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: while | snippet: while (Age < 0)
+  Logic changes:
+    - Added while 'while (Age < 0)'.
+    - Method 'while' was called with arguments: Age < 0.
+
+[2026-08-28T07:16:09.183Z] Person_2026-08-28T07-15-05-163Z.cs -> Person_2026-08-28T07-16-08-250Z.cs: 0 insert, 0 delete, 1 update
+    update-node | type: literal | snippet: "Age cannot be negative."
+  Logic changes:
+    - Renamed variable '"Age cannot be negative. Please enter a valid age."' to '"Age cannot be negative."'.
+
+[2026-08-28T07:17:16.095Z] Person_2026-08-28T07-16-08-250Z.cs -> Person_2026-08-28T07-17-14-719Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: if_stmt | snippet: if (Age < 18)
+  Logic changes:
+    - Added if_stmt 'if (Age < 18)'.
+    - Method 'if' was called with arguments: Age < 18.
+
+[2026-08-28T07:18:09.263Z] Person_2026-08-28T07-17-14-719Z.cs -> Person_2026-08-28T07-18-08-365Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: Console.WriteLine("You are eligible to vote.");
+  Logic changes:
+    - Added statement 'Console.WriteLine("You are eligible to vote.");'.
+    - Method 'Console.WriteLine' was called with arguments: "You are eligible to vote.".
+
+[2026-08-28T07:20:36.350Z] Person_2026-08-28T07-18-08-365Z.cs -> Person_2026-08-28T07-20-35-318Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: age ++;
+  Logic changes:
+    - Added statement 'age ++;'.
+    - Variable 'age' was incremented by 1.
+
+[2026-08-28T07:27:20.977Z] Person_2026-08-28T07-20-35-318Z.cs -> Person_2026-08-28T07-27-19-917Z.cs: 5 insert, 0 delete, 0 update (1 reorder ignored)
+    insert-node | type: if_stmt | snippet: if(Age > 100)
+    insert-node | type: if | snippet: if(Age > 100)
+    insert-tree | type: condition | snippet: (Age > 100)
+    insert-node | type: block | snippet: (unavailable)
+    insert-node | type: block_content | snippet: (unavailable)
+  Logic changes:
+    - Added if_stmt 'if(Age > 100)'.
+    - Method 'if' was called with arguments: Age > 100.
+    - Added if 'if(Age > 100)'.
+    - Method 'if' was called with arguments: Age > 100.
+    - Added condition '(Age > 100)'.
+    - Added block an unnamed element.
+    - Added block_content an unnamed element.
+
+[2026-08-28T07:27:40.706Z] Person_2026-08-28T07-27-24-790Z.cs -> Person_2026-08-28T07-27-39-805Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: expr_stmt | snippet: age--;
+  Logic changes:
+    - Added statement 'age--;'.
+    - Variable 'age' was decremented by 1.
+
+[2026-08-28T07:29:29.851Z] Person_2026-08-28T07-27-39-805Z.cs -> Person_2026-08-28T07-29-28-698Z.cs: 0 insert, 1 delete, 0 update
+    delete-tree | type: if_stmt | snippet: if(Age > 100)
+  Logic changes:
+    - Removed if_stmt 'if(Age > 100)'.
+    - Call to 'if' was removed.
+
+[2026-08-28T07:29:31.171Z] Person_2026-08-28T07-29-28-698Z.cs -> Person_2026-08-28T07-29-30-198Z.cs: 1 insert, 0 delete, 0 update
+    insert-tree | type: if_stmt | snippet: if(Age > 100)
+  Logic changes:
+    - Added if_stmt 'if(Age > 100)'.
+    - Method 'if' was called with arguments: Age > 100.
+

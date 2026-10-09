@@ -1,22 +1,47 @@
 using System;
 using System.Security.Cryptography;
-public class Person
+
+public class NewBaseType
 {
+    private string Address { get; set; }
     private string Name { get; set; }
+    private string PhoneNumber { get; set; } 
     private int Age { get; set; }
 
+    public double Height { get; set; }
+}
 
-    public Person(string name, int age, string gender)
+public class Teacher : NewBaseType
+{
+    public Teacher(string name,  int height,int age, string phoneNumber)
     {
-        Name = name;
-        Age = age;
-        Gender = gender;
+        if (Age < 0)
+        {   
+            throw new ArgumentException("Age cannot be negative."); 
 
-        Name="John";    
-        Age = 25;
+        } else
+        {
+            System.Console.WriteLine($"Teacher Name: {Name},Age: {Age},  Phone Number: {phoneNumber}, Height: {Height}");
+            Age++;  
+        }
+        
 
     }
-     
+    
+    public int GetAge()
+    {   
+        System.Console.WriteLine($"Teacher Age is: {Age}");
+        return Age;
+    }
+    
+    public void SetAge(int age)
+    {
+        if (age < 0)
+        {
+            throw new ArgumentException("Age cannot be negative.");
+        }
+        Age = age;
+    }
 }
 
 

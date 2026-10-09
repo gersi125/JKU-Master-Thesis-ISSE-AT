@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test tests/",
+    "test:update": "set UPDATE_SNAPSHOTS=1&& node --test tests/",
+    "test:dump": "node tests/dump.js"
   },
   "keywords": [],
   "author": "",
@@ -14,4 +16,5 @@
     "@vscode/tree-sitter-wasm": "^0.3.1",
     "web-tree-sitter": "^0.26.9"
   }
+  
 }

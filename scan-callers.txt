@@ -1,0 +1,13 @@
+watch-ast.js:5: const fs = require("fs");
+watch-ast.js:6: const { TARGET_FILE } = require('./watch-ast-config');
+watch-ast.js:7: const { initParser, parse, hashContent, normalizeForHash } = require('./watch-ast-parserService');
+watch-ast.js:8: const { startWebDiffServer, stopWebDiffServer, setSource } = require('./watch-ast-webdiffService');
+watch-ast.js:9: const { ensureSnapshotDir, saveSnapshot } = require('./watch-ast-snapshotService');
+watch-ast.js:10: const { runGumTreeDiff } = require('./watch-ast-gumtreeService');
+watch-ast.js:79: runGumTreeDiff(lastGoodSnapshotPath, newSnapshotPath);
+watch-ast-webdiffService.js:1: const http = require('http');
+watch-ast-webdiffService.js:2: const fs = require('fs');
+watch-ast-webdiffService.js:3: const config = require('./watch-ast-config');
+watch-ast-webdiffService.js:13: // gumtreeService.js (highlights) whenever the watcher validates something.
+watch-ast-webdiffService.js:87: <span id="logLabel">diff-log.txt</span>
+watch-ast-webdiffService.js:250: fs.writeFileSync(TARGET_FILE, content, 'utf8');
