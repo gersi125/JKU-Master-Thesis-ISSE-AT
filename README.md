@@ -1,4 +1,4 @@
-# Running Tests 
+# Requirements || Running the Applications ||Running Tests 
 
 All commands below are PowerShell commands, run from that folder.
 
@@ -24,8 +24,10 @@ Main files:
 
 ## 2. Prerequisites
 
-- **Node.js** (the project has been run with v25.9.0). Check with `node -v`.
-- **GumTree** installed at
+
+- Node.js + npm | v25.9.0 (Node 21+ needed for test glob) | Watcher, parser, tests (`node:test`, no extra packages)
+  (the project has been run with v25.9.0). Check with `node -v`.
+- GumTree installed at
   `C:\GumTree\dist\build\distributions\gumtree-4.0.0-beta8-SNAPSHOT\bin\gumtree.bat`
   (the path is set in `watch-ast-gumtreeService.js` as `GUMTREE_CMD`). Check with:
   ```powershell
@@ -35,10 +37,10 @@ Main files:
 - **Dependencies** (first time only, or after pulling changes):
   ```powershell
   npm install
-  ```
+- tree-sitter-c_sharp.wasm | – | C# grammar, next to the scripts |
+- GumTree | 4.0.0-beta8-SNAPSHOT | AST diff (`textdiff -f JSON`) |
 - `tree-sitter-c_sharp.wasm` is in the project folder.
-
----
+  ```
 
 ## 3. Starting the program
 
