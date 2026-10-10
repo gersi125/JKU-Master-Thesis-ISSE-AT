@@ -1,0 +1,2 @@
+Line 11 + foreach C.M() : foreach (var i in xs) { ... }
+Line 11 - for C.M() : for (int i = 0; i < 3; i++) { ... }

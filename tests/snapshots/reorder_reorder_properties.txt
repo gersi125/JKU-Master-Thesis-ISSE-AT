@@ -1,0 +1,1 @@
+Line 9->10 mv prop C @1/2 -> @2/2 : A : int

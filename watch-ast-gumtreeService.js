@@ -1427,10 +1427,16 @@ function parseGumTreeSummary(json, oldPath, newPath) {
     }
 }
 
+// Containers GumTree inserts/deletes as bare nodes while re-matching; their children carry the real change.
+const CONTAINER_TYPES = new Set(['block', 'block_content']);
+const isEmptyBlockText = (t) => /^\{\s*\}$/.test((t || '').trim());
+const POSITION_PAIR_RE = /@(\d+)\/\d+ -> @(\d+)\/\d+/;
+
 function parseGumTreeSummaryInner(json, oldPath, newPath) {
     const summary = { inserts: 0, deletes: 0, updates: 0, moves: 0, other: 0 };
     const details = [];
     const items = [];
+    const unresolvedMoves = [];   // only shown when nothing better explains the save
     const highlights = [];
 
     let parsed;
@@ -1454,7 +1460,7 @@ function parseGumTreeSummaryInner(json, oldPath, newPath) {
 
         // GumTree offsets: insert -> new file; delete / update / move -> old file.
         const sourceFile = (type === 'insert-node' || type === 'insert-tree') ? newPath
-            : (type === 'delete-node' || type === 'delete-tree' || type === 'update-node') ? oldPath
+            : (type === 'delete-node' || type === 'delete-tree' || type === 'update-node' || type === 'move-tree') ? oldPath
             : newPath;
         const snippet = rawLabel || extractSnippet(sourceFile, start, end);
 
@@ -1488,6 +1494,7 @@ function parseGumTreeSummaryInner(json, oldPath, newPath) {
             case 'move-tree': {
                 summary.moves++;
                 const dst = parseTreeField(action.parent || '');
+                const emptyBlock = CONTAINER_TYPES.has(elementType) && isEmptyBlockText(snippet);
                 let mv = null;
                 try {
                     mv = describeMove(oldPath, newPath, elementType, start, end, dst, action.at);
@@ -1496,14 +1503,27 @@ function parseGumTreeSummaryInner(json, oldPath, newPath) {
                 }
                 if (mv) {
                     details.push(`    move-tree | type: ${elementType} | ${mv.detailLine}`);
-                    items.push(item(mv.logicLine, 'old', mv.start, mv.end, false));
+                    const logicText = String(mv.logicLine || '');
+                    const pos = POSITION_PAIR_RE.exec(logicText);
+                    // The moved text as the log itself reports it ("... : { }")
+                    const movedEmptyBlock = CONTAINER_TYPES.has(elementType) &&
+                        (/:\s*\{\s*\}\s*$/.test(logicText) || /^\{\s*\}\s+moved/.test(String(mv.detailLine || '')));
+                    if (pos && pos[1] === pos[2]) {
+                        dbg('  [move] no-op (same position) skipped');
+                    } else if (emptyBlock || movedEmptyBlock) {
+                        dbg('  [move] empty block skipped');
+                    } else {
+                        items.push(item(mv.logicLine, 'old', mv.start, mv.end, false));
+                    }
                 } else {
                     details.push(`    move-tree | type: ${elementType} | (position could not be resolved)`);
-                    const oldE = loadFile(oldPath);
-                    items.push(item(
-                        mk(lineAt(oldE, start), 'move ', humanizeType(elementType), '', `${short(snippet || '', 80)} (position unresolved)`),
-                        'old', start, end, false
-                    ));
+                    if (!emptyBlock) {
+                        const oldE = loadFile(oldPath);
+                        unresolvedMoves.push(item(
+                            mk(lineAt(oldE, start), 'move ', humanizeType(elementType), '', `${short(snippet || '', 80)} (position unresolved)`),
+                            'old', start, end, false
+                        ));
+                    }
                 }
                 continue;
             }
@@ -1513,6 +1533,11 @@ function parseGumTreeSummaryInner(json, oldPath, newPath) {
         }
 
         details.push(`    ${type} | type: ${elementType} | snippet: ${snippet || '(unavailable)'}`);
+
+        // A bare container node says nothing by itself; its children are described on their own.
+        if ((type === 'insert-node' || type === 'delete-node') && CONTAINER_TYPES.has(elementType)) {
+            continue;
+        }
 
         try {
             items.push(...describeChange(ctx, type, elementType, inlineLabel, rawLabel || null, start, end, sourceFile));
@@ -1528,6 +1553,9 @@ function parseGumTreeSummaryInner(json, oldPath, newPath) {
         dbg('  [rollup] error:', e.message);
         for (const rec of ctx.rollup.values()) items.push(...rec.fallback);
     }
+
+    // Never swallow a save: if nothing else explains it, fall back to the unresolved moves.
+    if (items.length === 0) items.push(...unresolvedMoves);
 
     const logicNotes = finalizeItems(items);
 
@@ -1573,23 +1601,16 @@ function runGumTreeDiff(oldPath, newPath) {
     });
 }
 
-function runGumtree(oldFile, newFile) {
+function runGumTreeJson(oldPath, newPath) {
   return new Promise((resolve, reject) => {
-    const p = spawn(GUMTREE_BAT, ['textdiff', '-f', 'JSON', `"${oldFile}"`, `"${newFile}"`], {
-      shell: true,
-      windowsHide: true,
+    const cmd = `"${GUMTREE_CMD}" textdiff "${oldPath}" "${newPath}" -f JSON`;
+    exec(cmd, { windowsHide: true, maxBuffer: 64 * 1024 * 1024 }, (err, stdout, stderr) => {
+      if (err && !stdout) return reject(new Error(stderr || err.message));
+      resolve(stdout);   // raw string, exactly what parseGumTreeSummary expects
     });
-    let out = '', err = '';
-    p.stdout.on('data', d => (out += d));
-    p.stderr.on('data', d => (err += d));
-    p.on('close', code => (code === 0 ? resolve(out) : reject(new Error(err || `gumtree exit ${code}`))));
   });
 }
 
-/**
- * Pure entry point: two C# sources in, structured result out.
- * No watcher, no server, no fixed paths.
- */
 async function analyzeChange(oldSource, newSource) {
   const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'astdiff-'));
   const oldFile = path.join(dir, 'old.cs');
@@ -1598,25 +1619,40 @@ async function analyzeChange(oldSource, newSource) {
     await fs.promises.writeFile(oldFile, oldSource, 'utf8');
     await fs.promises.writeFile(newFile, newSource, 'utf8');
 
-    const json = JSON.parse(await runGumtree(oldFile, newFile));
-    const actions = json.actions || [];
+    const rawJson = await runGumTreeJson(oldFile, newFile);
+    const summary = parseGumTreeSummary(rawJson, oldFile, newFile);
 
-    // >>> PLUG IN YOUR EXISTING CODE HERE <<<
-    // Whatever you currently call to turn `actions` (+ old/new tree) into log text.
-    // It must return an array of strings and the meaningfulCount you already compute.
-    const { lines, meaningfulCount } = buildLog(actions, oldSource, newSource);
+    let actions = [];
+    try { actions = JSON.parse(rawJson).actions || []; } catch (e) { /* leave empty */ }
 
-    return { lines, actions, meaningfulCount };
+    return {
+      summary,
+      lines: linesFromSummary(summary),
+      actions,
+      meaningfulCount: summary.actionCount,
+    };
   } finally {
     await fs.promises.rm(dir, { recursive: true, force: true });
   }
 }
 
-module.exports.analyzeChange = analyzeChange; // keep your other exports
+// Flattens whatever shape `details` / `logicNotes` have into plain strings for tests.
+function linesFromSummary(summary) {
+  const out = [];
+  const push = (x) => {
+    if (x == null) return;
+    if (typeof x === 'string') out.push(x);
+    else if (Array.isArray(x)) x.forEach(push);
+    else if (typeof x === 'object') out.push(x.line ?? x.text ?? JSON.stringify(x));
+  };
+  push(summary.details);
+  push(summary.logicNotes);
+  return out;
+}
 
 module.exports = {
     runGumTreeDiff,
-    runGumtree,
+    runGumTreeJson,
     parseGumTreeSummary,
     describeAction,
     describeStatement,

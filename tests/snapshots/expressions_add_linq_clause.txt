@@ -1,0 +1,2 @@
+Line 11 ~ var C.M() : var r = xs.Select(x => x); -> var r = xs.Where(x => x > 0).Select(x => x);  [+Where(x=>x>0).]
+Line 11 + call C.M() : xs.Where(x => x > 0)

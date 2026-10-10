@@ -1,12 +1,15 @@
-const svc = require('../watch-ast-gumtreeService');
+const parserSvc = require('../watch-ast-parserService')
+const gumtreeSvc = require('../watch-ast-gumtreeService')
 
+let ready = false;
 async function init() {
-  // If your parser needs async init (web-tree-sitter Parser.init + Language.load), call it here.
-  if (typeof svc.init === 'function') await svc.init();
+  if (ready) return;
+  await parserSvc.initParser();   // same call watch-ast.js makes at startup
+  ready = true;
 }
 
 async function analyze(oldSrc, newSrc) {
-  return svc.analyzeChange(oldSrc, newSrc);
+  return gumtreeSvc.analyzeChange(oldSrc, newSrc);
 }
 
 module.exports = { init, analyze };

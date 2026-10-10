@@ -1,11 +1,9 @@
 const { analyze } = require('./adapter');
 
-// Wraps a class-body snippet into a valid compilation unit so Tree-sitter parses it cleanly.
 function inClass(body) {
   return `using System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nnamespace T\n{\n    public class C\n    {\n${indent(body, 8)}\n    }\n}\n`;
 }
 
-// Wraps a statement snippet into a method body.
 function inMethod(body) {
   return inClass(`public void M()\n{\n${indent(body, 4)}\n}`);
 }
@@ -16,10 +14,17 @@ function indent(text, n) {
 }
 
 const norm = s => s.replace(/\r\n/g, '\n');
+const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// L('+ method C.Foo()')              → matches "Line 9 + method C.Foo() : ..." at any line number
+// L('~ var C.M()', 'number 1 -> 2')  → same prefix, and the tail text somewhere after it
+const L = (prefix, tail = '') =>
+  new RegExp('^Line \\S+ ' + esc(prefix) + (tail ? '.*' + esc(tail) : ''), 'm');
 
 async function diff(oldSrc, newSrc) {
   const r = await analyze(norm(oldSrc), norm(newSrc));
-  return { ...r, text: r.lines.join('\n') };
+  const semantic = r.lines.filter(l => l.startsWith('Line ')).join('\n');
+  return { ...r, text: r.lines.join('\n'), semantic };
 }
 
-module.exports = { inClass, inMethod, diff };
+module.exports = { inClass, inMethod, diff, L };

@@ -1,0 +1,2 @@
+Line 11 + var C.M() : int a = 1
+Line 11 + var C.M() : int b = 2

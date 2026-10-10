@@ -1,0 +1,106 @@
+        return { summaryText: 'parse error', actionCount: 0, details: [], logicNotes: [], highlights: [] };
+    }
+
+    const actions = parsed.actions || [];
+    if (DEBUG) console.log(JSON.stringify(actions, null, 2));
+
+    const ctx = { oldPath, newPath, rollup: new Map() };
+
+    for (const action of actions) {
+        const type = action.action || '';
+        const rawTree = action.tree || '';
+        const rawLabel = action.label || '';
+
+        const { elementType, inlineLabel, start, end } = parseTreeField(rawTree);
+
+        // GumTree offsets: insert -> new file; delete / update / move -> old file.
+        const sourceFile = (type === 'insert-node' || type === 'insert-tree') ? newPath
+            : (type === 'delete-node' || type === 'delete-tree' || type === 'update-node') ? oldPath
+            : newPath;
+        const snippet = rawLabel || extractSnippet(sourceFile, start, end);
+
+        switch (type) {
+            case 'insert-node':
+            case 'insert-tree':
+                summary.inserts++;
+                if (start !== null && end !== null) {
+                    highlights.push({ type: 'insert', start, end, elementType, label: snippet });
+                }
+                break;
+            case 'delete-node':
+            case 'delete-tree':
+                summary.deletes++;
+                if (start !== null) {
+                    highlights.push({
+                        type: 'delete',
+                        lineHint: lineNumberAt(oldPath, start),
+                        elementType,
+                        label: snippet
+                    });
+                }
+                break;
+            case 'update-node':
+                summary.updates++;
+                if (start !== null && snippet) {
+                    highlights.push({ type: 'update', start, end: start + snippet.length, elementType, label: snippet });
+                }
+                break;
+
+            case 'move-tree': {
+                summary.moves++;
+                const dst = parseTreeField(action.parent || '');
+                let mv = null;
+                try {
+                    mv = describeMove(oldPath, newPath, elementType, start, end, dst, action.at);
+                } catch (e) {
+                    dbg('  [move] error:', e.message);
+                }
+                if (mv) {
+                    details.push(`    move-tree | type: ${elementType} | ${mv.detailLine}`);
+                    items.push(item(mv.logicLine, 'old', mv.start, mv.end, false));
+                } else {
+                    details.push(`    move-tree | type: ${elementType} | (position could not be resolved)`);
+                    const oldE = loadFile(oldPath);
+                    items.push(item(
+                        mk(lineAt(oldE, start), 'move ', humanizeType(elementType), '', `${short(snippet || '', 80)} (position unresolved)`),
+                        'old', start, end, false
+                    ));
+                }
+                continue;
+            }
+
+            default:
+                summary.other++;
+        }
+
+        details.push(`    ${type} | type: ${elementType} | snippet: ${snippet || '(unavailable)'}`);
+
+        try {
+            items.push(...describeChange(ctx, type, elementType, inlineLabel, rawLabel || null, start, end, sourceFile));
+        } catch (e) {
+            dbg('  [describe] error:', e.message);
+            items.push(item(`? ${type} ${humanizeType(elementType)} : ${short(snippet || '', 80)}`, 'new', start, end, false));
+        }
+    }
+
+    try {
+        items.unshift(...resolveRollup(ctx));
+    } catch (e) {
+        dbg('  [rollup] error:', e.message);
+        for (const rec of ctx.rollup.values()) items.push(...rec.fallback);
+    }
+
+    const logicNotes = finalizeItems(items);
+
+    const meaningfulCount = summary.inserts + summary.deletes + summary.updates + summary.other + summary.moves;
+
+    const parts = [];
+    if (summary.inserts) parts.push(`+${summary.inserts}`);
+    if (summary.deletes) parts.push(`- ${summary.deletes}`);
+    if (summary.updates) parts.push(`~ ${summary.updates}`);
+    if (summary.moves) parts.push(`move ${summary.moves}`);
+    if (summary.other) parts.push(`other ${summary.other}`);
+    const summaryText = parts.join(' ') || 'no changes';
+
+    return { summaryText, actionCount: meaningfulCount, details, logicNotes, highlights };
+}
